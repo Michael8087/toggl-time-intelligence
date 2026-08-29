@@ -12,17 +12,20 @@ import {
   CircleDot,
   Clock,
   DollarSign,
+  FileText,
   Folder,
   Info,
   Link2,
   MoreVertical,
   Play,
+  Plus,
   Repeat,
   SignalHigh,
   Sparkles,
   Star,
   Tag,
   Timer as TimerIcon,
+  Upload,
   UserRound,
   Users,
   X,
@@ -49,11 +52,13 @@ function Row({
   label,
   children,
   hint,
+  star,
 }: {
   icon: typeof Clock
   label: string
   children: ReactNode
   hint?: boolean
+  star?: boolean
 }) {
   return (
     <div className="flex items-start gap-4 px-6 py-[7px]">
@@ -61,6 +66,7 @@ function Row({
         <Icon size={15} className="shrink-0" />
         <span className="truncate">{label}</span>
         {hint && <Info size={12} className="shrink-0 text-lo" />}
+        {star && <Star size={11} className="shrink-0 fill-lo text-lo" />}
       </div>
       <div className="min-w-0 flex-1">{children}</div>
     </div>
@@ -353,6 +359,18 @@ function TimeSection() {
         </div>
       )}
 
+      {/* Toggl's own empty state for a task nobody has logged or planned against. */}
+      {trackedHours === 0 && planned === 0 && !estimated && (
+        <div className="mb-4 text-center">
+          <div className="font-display text-[15px] font-semibold text-hi">
+            No time on this task yet
+          </div>
+          <div className="mt-0.5 text-[14px] text-mid">
+            Log or plan time to track your progress
+          </div>
+        </div>
+      )}
+
       <div className="flex divide-x divide-hairline overflow-hidden rounded-xl border border-hairline">
         <TimeBox
           label="Logged"
@@ -420,6 +438,7 @@ export function TaskDrawer() {
     time: true,
   })
   const [moreProps, setMoreProps] = useState(false)
+  const [billable, setBillable] = useState(true)
 
   if (!drawerTaskId) return null
   const task = HERO_TASK
@@ -485,11 +504,9 @@ export function TaskDrawer() {
           <Row icon={Folder} label="Project">
             <span className="inline-flex flex-wrap items-center gap-2">
               <Folder size={14} className="text-e-blue" />
+              {/* The client lives on the project, not on the task. */}
               <span className="font-display text-[14px] font-semibold text-e-blue">
                 {project.name}
-              </span>
-              <span className="text-[13px] uppercase tracking-wide text-mid">
-                · {project.client}
               </span>
             </span>
           </Row>
@@ -512,7 +529,11 @@ export function TaskDrawer() {
               </span>
             ) : (
               <span className="inline-flex flex-wrap items-center gap-2">
-                <Empty />
+                {/* Toggl shows 0h, not an empty state — which is the whole point. */}
+                <span className="tnum font-display text-[14px] font-semibold text-lo">0h</span>
+                <span className="inline-flex items-center gap-1 text-[13px] text-mid">
+                  total <ChevronDown size={13} />
+                </span>
                 {/* The suggestion, inline in the field it belongs to. */}
                 <span className="inline-flex items-center gap-1.5 rounded-pill border border-pink/35 bg-pink-lo px-2 py-0.5 font-display text-2xs font-semibold text-pink">
                   <Sparkles size={11} />
@@ -527,15 +548,17 @@ export function TaskDrawer() {
           </Row>
 
           <Row icon={Tag} label="Tags">
-            <span className="flex flex-wrap gap-1.5">
+            <span className="flex flex-wrap items-center gap-1.5">
               {task.tags.map((t) => (
                 <span
                   key={t}
-                  className="rounded bg-panel-3 px-1.5 py-0.5 text-2xs font-medium text-mid"
+                  className="inline-flex items-center gap-1 rounded border border-hairline bg-panel-2 px-1.5 py-0.5 text-2xs text-mid"
                 >
+                  <Tag size={10} className="text-e-green" />
                   {t}
                 </span>
               ))}
+              <Plus size={13} className="text-lo" />
             </span>
           </Row>
 
@@ -545,6 +568,7 @@ export function TaskDrawer() {
                 {USER.initials}
               </span>
               <span className="font-display text-[14px] font-semibold text-hi">{USER.name}</span>
+              <Plus size={13} className="text-lo" />
             </span>
           </Row>
 
@@ -563,18 +587,31 @@ export function TaskDrawer() {
             </span>
           </Row>
 
+          {/* Billable sits above the fold in the real panel, not under More properties. */}
+          <Row icon={DollarSign} label="Billable" hint star>
+            <button
+              onClick={() => setBillable(!billable)}
+              className={clsx(
+                'flex h-5 w-9 items-center rounded-pill px-0.5 transition-colors',
+                billable ? 'bg-pink' : 'bg-hairline-2',
+              )}
+              role="switch"
+              aria-checked={billable}
+              aria-label="Billable"
+            >
+              <span
+                className={clsx(
+                  'h-4 w-4 rounded-full bg-white transition-transform',
+                  billable && 'translate-x-4',
+                )}
+              />
+            </button>
+          </Row>
+
           {moreProps && (
             <>
               <Row icon={Repeat} label="Repeat">
                 <Empty />
-              </Row>
-              <Row icon={DollarSign} label="Billable">
-                <span className="inline-flex items-center gap-2">
-                  <span className="flex h-5 w-9 items-center rounded-pill bg-pink px-0.5">
-                    <span className="ml-auto h-4 w-4 rounded-full bg-white" />
-                  </span>
-                  <Star size={12} className="fill-mid text-mid" />
-                </span>
               </Row>
               <Row icon={Clock} label="Rate">
                 <span className="tnum font-display text-[14px] font-semibold text-hi">
@@ -671,6 +708,17 @@ export function TaskDrawer() {
         >
           <TimeSection />
         </Section>
+
+        <div className="flex flex-wrap gap-3 border-t border-hairline px-6 py-5">
+          <button className="inline-flex h-10 items-center gap-2 rounded-lg border border-hairline-2 px-4 font-display text-[14px] font-medium text-hi transition-colors hover:border-lo">
+            <Upload size={15} />
+            Add attachment
+          </button>
+          <button className="inline-flex h-10 items-center gap-2 rounded-lg border border-hairline-2 px-4 font-display text-[14px] font-medium text-hi transition-colors hover:border-lo">
+            <FileText size={15} />
+            Add notes
+          </button>
+        </div>
 
         <div className="h-8" />
       </aside>
