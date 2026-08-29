@@ -199,9 +199,6 @@ export function TaskDashboard() {
         <h1 className="min-w-0 font-display text-[21px] font-semibold text-hi">
           {HERO_TASK.title}
         </h1>
-        <span className="rounded bg-panel-3 px-1.5 py-0.5 text-2xs font-semibold text-mid">
-          {HERO_TASK.ref}
-        </span>
         <span className="font-display text-[13px] uppercase tracking-wide text-mid">
           {project.name} · {project.client}
         </span>

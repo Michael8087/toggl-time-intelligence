@@ -22,7 +22,7 @@ export function PlanSheet() {
   const current = STEPS.findIndex((s) => s.id === phase)
 
   return (
-    <div className="absolute inset-0 z-[60] flex items-center justify-center p-4 sm:p-8">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-8">
       <div className="absolute inset-0 animate-fade-in bg-black/45" onClick={() => setPhase('intake')} />
 
       <div className="relative flex max-h-full w-full max-w-[1060px] animate-fade-up flex-col overflow-hidden rounded-2xl border border-hairline bg-panel shadow-pop">

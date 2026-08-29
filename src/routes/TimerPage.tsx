@@ -63,7 +63,7 @@ function TimerRow() {
             </div>
             <div className="flex items-center gap-1.5 text-2xs text-mid">
               <span className="h-2 w-2 shrink-0 rounded-sm bg-e-pink" />
-              Infotainment Frontend · {HERO_TASK.ref}
+              Infotainment Frontend
             </div>
           </div>
         </div>

@@ -1,6 +1,10 @@
 import clsx from 'clsx'
+import { useState } from 'react'
 import {
+  ArrowDown,
+  ArrowUp,
   ChevronDown,
+  ChevronsUpDown,
   ClipboardList,
   DollarSign,
   Filter,
@@ -9,6 +13,7 @@ import {
   ListFilter,
   SignalHigh,
   Sparkles,
+  Tag,
   Circle,
   CheckCircle2,
 } from 'lucide-react'
@@ -26,7 +31,7 @@ const PRIORITY: Record<string, string> = {
   'INF-244': 'Medium',
 }
 
-function Header() {
+function Header({ sortLabel, sortDir }: { sortLabel: string; sortDir: 'asc' | 'desc' }) {
   return (
     <>
       <div className="flex items-center gap-3 px-5 pb-3 pt-4">
@@ -49,7 +54,7 @@ function Header() {
           <ListFilter size={13} /> Group by: <span className="text-hi">Status</span>
         </span>
         <span className="toolbar-pill">
-          Sort by: <span className="text-hi">Priority</span> ↓
+          Sort by: <span className="text-hi">{sortLabel}</span> {sortDir === 'desc' ? '↓' : '↑'}
         </span>
       </div>
 
@@ -110,7 +115,15 @@ function Row({ task, onOpen }: { task: Task; onOpen: () => void }) {
           >
             {task.title}
           </span>
-          <span className="text-2xs text-lo">{task.ref}</span>
+          {task.tags.map((t) => (
+            <span
+              key={t}
+              className="inline-flex items-center gap-1 rounded border border-hairline bg-panel px-1.5 py-0.5 text-2xs text-mid"
+            >
+              <Tag size={10} className="text-e-green" />
+              {t}
+            </span>
+          ))}
           {unplanned && (
             <span className="inline-flex items-center gap-1 rounded-pill border border-pink/35 bg-pink-lo px-1.5 py-0.5 text-2xs font-semibold text-pink">
               <Sparkles size={10} />
@@ -154,15 +167,105 @@ function Row({ task, onOpen }: { task: Task; onOpen: () => void }) {
   )
 }
 
+type SortKey = 'tasks' | 'status' | 'project' | 'billable' | 'priority'
+
+const SORT_LABELS: Record<SortKey, string> = {
+  tasks: 'Task',
+  status: 'Status',
+  project: 'Project',
+  billable: 'Billable',
+  priority: 'Priority',
+}
+
+const PRIORITY_RANK: Record<string, number> = { High: 3, Medium: 2, Low: 1 }
+const STATUS_RANK: Record<string, number> = { Todo: 1, in_progress: 2, done: 3 }
+
+/** Sortable column header, with Track's ⇅ / ↓ affordance. */
+function Th({
+  label,
+  sortKey,
+  active,
+  dir,
+  onSort,
+  className,
+}: {
+  label: string
+  sortKey: SortKey
+  active: boolean
+  dir: 'asc' | 'desc'
+  onSort: (k: SortKey) => void
+  className?: string
+}) {
+  return (
+    <th className={clsx('py-2 font-display', className)}>
+      <button
+        onClick={() => onSort(sortKey)}
+        className={clsx(
+          'inline-flex items-center gap-1 text-2xs font-semibold uppercase tracking-[0.08em] transition-colors',
+          active ? 'text-hi' : 'text-mid hover:text-hi',
+        )}
+      >
+        {label}
+        {active ? (
+          dir === 'desc' ? (
+            <ArrowDown size={12} />
+          ) : (
+            <ArrowUp size={12} />
+          )
+        ) : (
+          <ChevronsUpDown size={12} className="opacity-60" />
+        )}
+      </button>
+    </th>
+  )
+}
+
 export function TasksPage() {
   const { openDrawer, phase } = useDemo()
-  const todo = [HERO_TASK, ...OTHER_TASKS]
-  const done = COMPLETED_TASKS
+  const [sortKey, setSortKey] = useState<SortKey>('priority')
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
+
+  const onSort = (k: SortKey) => {
+    if (k === sortKey) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+    else {
+      setSortKey(k)
+      setSortDir('desc')
+    }
+  }
+
+  /** Sorting runs inside each status group, since the list is grouped by status. */
+  const sortTasks = (rows: Task[]) => {
+    const value = (t: Task): string | number => {
+      switch (sortKey) {
+        case 'tasks':
+          return t.title.toLowerCase()
+        case 'status':
+          return STATUS_RANK[t.status] ?? 0
+        case 'project':
+          return PROJECTS.find((p) => p.id === t.projectId)?.name.toLowerCase() ?? ''
+        case 'billable':
+          return PROJECTS.find((p) => p.id === t.projectId)?.billable ? 1 : 0
+        case 'priority':
+          return PRIORITY_RANK[PRIORITY[t.id] ?? 'Medium']
+      }
+    }
+    return [...rows].sort((a, b) => {
+      const va = value(a)
+      const vb = value(b)
+      const cmp = typeof va === 'number' && typeof vb === 'number'
+        ? va - vb
+        : String(va).localeCompare(String(vb))
+      return sortDir === 'desc' ? -cmp : cmp
+    })
+  }
+
+  const todo = sortTasks([HERO_TASK, ...OTHER_TASKS])
+  const done = sortTasks(COMPLETED_TASKS)
 
   return (
     <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
       <div className="scrollbar-slim min-h-0 flex-1 overflow-y-auto">
-        <Header />
+        <Header sortLabel={SORT_LABELS[sortKey]} sortDir={sortDir} />
 
         {(phase === 'intake' || phase === 'estimate') && (
           <div className="space-y-3 px-5 pb-4">
@@ -191,21 +294,46 @@ export function TasksPage() {
           <thead>
             <tr className="border-y border-hairline text-left">
               <th className="w-9 py-2 pl-5" />
-              <th className="py-2 pr-4 font-display text-2xs font-semibold uppercase tracking-[0.08em] text-mid">
-                Tasks
-              </th>
-              <th className="w-[130px] py-2 pr-4 font-display text-2xs font-semibold uppercase tracking-[0.08em] text-mid">
-                Status
-              </th>
-              <th className="w-[200px] py-2 pr-4 font-display text-2xs font-semibold uppercase tracking-[0.08em] text-mid">
-                Project
-              </th>
-              <th className="w-[90px] py-2 pr-4 font-display text-2xs font-semibold uppercase tracking-[0.08em] text-mid">
-                Billable
-              </th>
-              <th className="w-[120px] py-2 pr-5 font-display text-2xs font-semibold uppercase tracking-[0.08em] text-mid">
-                Priority
-              </th>
+              <Th
+                label="Tasks"
+                sortKey="tasks"
+                active={sortKey === 'tasks'}
+                dir={sortDir}
+                onSort={onSort}
+                className="pr-4"
+              />
+              <Th
+                label="Status"
+                sortKey="status"
+                active={sortKey === 'status'}
+                dir={sortDir}
+                onSort={onSort}
+                className="w-[130px] pr-4"
+              />
+              <Th
+                label="Project"
+                sortKey="project"
+                active={sortKey === 'project'}
+                dir={sortDir}
+                onSort={onSort}
+                className="w-[200px] pr-4"
+              />
+              <Th
+                label="Billable"
+                sortKey="billable"
+                active={sortKey === 'billable'}
+                dir={sortDir}
+                onSort={onSort}
+                className="w-[90px] pr-4"
+              />
+              <Th
+                label="Priority"
+                sortKey="priority"
+                active={sortKey === 'priority'}
+                dir={sortDir}
+                onSort={onSort}
+                className="w-[120px] pr-5"
+              />
             </tr>
           </thead>
           <tbody>

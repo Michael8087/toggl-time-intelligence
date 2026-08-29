@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import {
   ArrowRight,
   Calendar,
@@ -435,13 +436,15 @@ export function TaskDrawer() {
   const toggle = (k: keyof typeof openSections) =>
     setOpenSections((s) => ({ ...s, [k]: !s[k] }))
 
-  return (
+  // Portaled to the body so the scrim covers the whole window — rail and
+  // sidebar included — the way the real drawer does.
+  return createPortal(
     <>
       <div
-        className="absolute inset-0 z-40 bg-black/25 animate-fade-in"
+        className="fixed inset-0 z-40 animate-fade-in bg-black/35"
         onClick={closeDrawer}
       />
-      <aside className="scrollbar-slim absolute inset-y-0 right-0 z-50 w-full max-w-[600px] animate-fade-in overflow-y-auto border-l border-hairline bg-panel shadow-pop">
+      <aside className="scrollbar-slim fixed inset-y-0 right-0 z-50 w-full max-w-[600px] animate-fade-in overflow-y-auto border-l border-hairline bg-panel shadow-pop">
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center gap-3 border-b border-hairline bg-panel px-6 py-4">
           <span className="h-5 w-5 shrink-0 rounded bg-e-pink" />
@@ -673,7 +676,8 @@ export function TaskDrawer() {
       </aside>
 
       {planning && <PlanSheet />}
-    </>
+    </>,
+    document.body,
   )
 }
 
