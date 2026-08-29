@@ -90,7 +90,7 @@ export function buildEstimate(_task: Task, mode: EstimateMode = 'newcomer'): Est
           hours: 1,
           detail:
             'The navigation API is not final. On this project, components started against an unfinished contract have needed roughly an hour of rework.',
-          evidence: ['Navigation API still open, expected 12:00 today'],
+          evidence: ['“Finalise navigation API” still open, expected 12:00 today'],
         },
       ],
       sources: [
@@ -133,7 +133,7 @@ export function buildEstimate(_task: Task, mode: EstimateMode = 'newcomer'): Est
         hours: 1,
         detail:
           'The navigation API is not final. Components started against an unfinished contract have needed roughly an hour of rework.',
-        evidence: ['Navigation API still open, expected 12:00 today'],
+        evidence: ['“Finalise navigation API” still open, expected 12:00 today'],
       },
       {
         id: 'velocity',
