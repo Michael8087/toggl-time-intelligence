@@ -32,9 +32,8 @@ export function ReportsPage() {
   const totalEstimate = rows.reduce((s, r) => s + r.estimate, 0)
 
   function exportCsv() {
-    const header = ['Reference', 'Task', 'Estimated (h)', 'Actual (h)', 'Variance (h)', 'Status']
+    const header = ['Task', 'Estimated (h)', 'Actual (h)', 'Variance (h)', 'Status']
     const body = rows.map((r) => [
-      r.ref,
       r.title,
       r.estimate.toFixed(2),
       r.actual.toFixed(2),
@@ -122,12 +121,11 @@ export function ReportsPage() {
                 {rows.map((r) => {
                   const v = r.actual - r.estimate
                   return (
-                    <tr key={r.ref} className="border-b border-hairline">
+                    <tr key={r.title} className="border-b border-hairline">
                       <td className="py-3 pl-5">
                         <div className="font-display text-[13px] font-medium text-hi">
                           {r.title}
                         </div>
-                        <div className="text-2xs text-lo">{r.ref}</div>
                       </td>
                       <td className="tnum py-3 text-right text-[13px] text-hi">
                         {formatDuration(r.estimate)}

@@ -666,7 +666,6 @@ export function TaskDrawer() {
                     <span className="font-display text-[13px] font-semibold text-hi">
                       {d.title}
                     </span>
-                    <span className="text-2xs text-lo">{d.id}</span>
                     <span
                       className={clsx(
                         'rounded px-1.5 py-px text-2xs font-semibold',

@@ -5,6 +5,9 @@ import { accuracyPct, estimateHistory } from '../lib/estimate'
 import { HERO_TASK, USER } from '../data/demo'
 import { formatDuration } from '../lib/time'
 
+/** Task titles are too long for an axis; the first two words identify them. */
+const shortLabel = (title: string) => title.split(' ').slice(0, 2).join(' ')
+
 export function SummaryPage() {
   const { phase, planHours, trackedHours } = useDemo()
   const done = phase === 'complete' || phase === 'reported'
@@ -119,7 +122,7 @@ export function SummaryPage() {
                     textAnchor="middle"
                     className="fill-[rgb(var(--c-lo))] text-[9px]"
                   >
-                    {r.id}
+                    {shortLabel(r.title)}
                   </text>
                 </g>
               ))}
@@ -155,7 +158,6 @@ export function SummaryPage() {
                   >
                     <td className="py-2.5 pl-5">
                       <div className="font-display text-[13px] font-medium text-hi">{r.title}</div>
-                      <div className="text-2xs text-lo">{r.id}</div>
                     </td>
                     <td className="tnum py-2.5 text-right text-[13px] text-hi">
                       {formatDuration(r.estimateHours)}

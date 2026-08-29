@@ -128,7 +128,7 @@ export function CapacityPanel() {
                 <CircleDot size={15} className="mt-0.5 shrink-0 text-warn" />
                 <div className="min-w-0 text-[13px] leading-relaxed">
                   <span className="font-display font-semibold text-hi">
-                    {upstream.title} ({upstream.id})
+                    {upstream.title}
                   </span>{' '}
                   <span className="text-mid">
                     is still open with {upstream.owner}. Expected to land at{' '}
@@ -141,7 +141,7 @@ export function CapacityPanel() {
                 <Lock size={15} className="mt-0.5 shrink-0 text-bad" />
                 <div className="min-w-0 text-[13px] leading-relaxed">
                   <span className="font-display font-semibold text-hi">
-                    Integration testing (INF-244)
+                    Integration testing
                   </span>{' '}
                   <span className="text-mid">
                     is booked for Thursday 09:00. That is what sets the {formatDayLong(deadline)}{' '}
