@@ -61,7 +61,9 @@ interface NavItem {
   icon: typeof Clock
   to?: string
   star?: boolean
-  dot?: string
+  /** Favourited projects take their own colour, on the same folder icon the
+   *  Projects table uses. */
+  tone?: string
 }
 
 const SECTIONS: { title: string; items: NavItem[] }[] = [
@@ -90,8 +92,8 @@ const SECTIONS: { title: string; items: NavItem[] }[] = [
       { label: 'My Profitability', icon: PieChart },
       { label: 'My Workload', icon: Columns3 },
       { label: 'My Utilization', icon: Clock },
-      { label: 'Infotainment Frontend', icon: Folder, to: '/projects/skoda-infotainment', dot: '#EE5FA0' },
-      { label: 'Sensor Dashboard', icon: Folder, dot: '#8FC5E8' },
+      { label: 'Infotainment Frontend', icon: Folder, tone: 'text-e-pink' },
+      { label: 'Sensor Dashboard', icon: Folder, tone: 'text-e-blue' },
     ],
   },
 ]
@@ -171,18 +173,11 @@ function Sidebar() {
                 const Icon = item.icon
                 const body = (
                   <>
-                    {item.dot ? (
-                      <span
-                        className="h-3.5 w-3.5 shrink-0 rounded-[3px]"
-                        style={{ background: item.dot }}
-                      />
-                    ) : (
-                      <Icon
-                        size={15}
-                        strokeWidth={2}
-                        className={active ? 'text-pink' : 'text-mid'}
-                      />
-                    )}
+                    <Icon
+                      size={15}
+                      strokeWidth={2}
+                      className={item.tone ?? (active ? 'text-pink' : 'text-mid')}
+                    />
                     <span className="truncate">{item.label}</span>
                     {item.star && (
                       <Star size={11} className="ml-auto shrink-0 fill-mid text-mid" />
@@ -205,8 +200,13 @@ function Sidebar() {
                       </NavLink>
                     ) : (
                       <span
-                        className="flex cursor-default items-center gap-2.5 rounded-lg px-2.5 py-[7px] font-display text-[13.5px] font-medium text-dim"
-                        title="Not part of this prototype"
+                        className={clsx(
+                          'flex cursor-default items-center gap-2.5 rounded-lg px-2.5 py-[7px] font-display text-[13.5px] font-medium',
+                          // A favourited project is real, just not navigable here;
+                          // an unbuilt feature reads as genuinely inactive.
+                          item.tone ? 'text-mid' : 'text-dim',
+                        )}
+                        title={item.tone ? undefined : 'Not part of this prototype'}
                       >
                         {body}
                       </span>
