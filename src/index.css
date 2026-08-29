@@ -1,0 +1,189 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Toggl Track 2.0 ships light and dark. Both are sampled from the real app.
+ *
+ * The important detail is that entry colours are not simply inverted: in light
+ * mode a *logged* entry is a saturated fill with white text, in dark mode it is
+ * a bright pastel fill with near-black text. A *planned* entry is, in both
+ * themes, a low-contrast tint of the same hue. That contrast between "solid"
+ * and "ghosted" is the app's existing vocabulary for actual versus plan, and
+ * this concept is built on top of it rather than beside it.
+ */
+
+@layer base {
+  :root {
+    color-scheme: light;
+
+    --c-canvas: 255 255 255;
+    --c-surface: 247 246 249;
+    --c-panel: 255 255 255;
+    --c-panel-2: 245 244 247;
+    --c-panel-3: 237 235 240;
+    --c-hairline: 231 228 234;
+    --c-hairline-2: 214 210 219;
+
+    --c-hi: 26 20 32;
+    --c-mid: 106 99 115;
+    --c-lo: 141 134 150;
+    --c-dim: 176 170 184;
+
+    --c-pink: 186 61 158;
+    --c-pink-hi: 154 45 130;
+    --c-pink-lo: 250 233 245;
+    --c-plum: 245 234 247;
+    --c-on-plum: 26 20 32;
+
+    /* Entry fills */
+    --c-e-pink: 214 36 106;
+    --c-e-yellow: 143 125 14;
+    --c-e-blue: 46 126 184;
+    --c-e-green: 31 122 87;
+    --c-e-lilac: 109 75 184;
+    --c-on-entry: 255 255 255;
+    --c-e-planned: 211 231 246;
+    --c-on-planned: 26 74 112;
+    --c-e-maroon: 250 220 231;
+    --c-on-maroon: 158 27 76;
+    --c-timeoff: 237 237 237;
+
+    --c-ok: 21 128 92;
+    --c-ok-lo: 226 244 237;
+    --c-warn: 140 106 22;
+    --c-warn-lo: 253 243 219;
+    --c-bad: 190 74 44;
+    --c-bad-lo: 252 234 228;
+
+    --c-shadow: 26 20 32;
+  }
+
+  .dark {
+    color-scheme: dark;
+
+    --c-canvas: 0 0 0;
+    --c-surface: 11 11 14;
+    --c-panel: 20 20 24;
+    --c-panel-2: 28 28 33;
+    --c-panel-3: 36 36 42;
+    --c-hairline: 38 38 44;
+    --c-hairline-2: 53 53 61;
+
+    --c-hi: 237 235 239;
+    --c-mid: 154 150 161;
+    --c-lo: 108 104 116;
+    --c-dim: 74 71 82;
+
+    --c-pink: 232 69 155;
+    --c-pink-hi: 243 104 176;
+    --c-pink-lo: 46 16 38;
+    --c-plum: 58 32 68;
+    --c-on-plum: 237 235 239;
+
+    --c-e-pink: 238 95 160;
+    --c-e-yellow: 239 201 63;
+    --c-e-blue: 143 197 232;
+    --c-e-green: 111 203 159;
+    --c-e-lilac: 182 155 232;
+    --c-on-entry: 17 17 20;
+    --c-e-planned: 23 69 107;
+    --c-on-planned: 207 230 245;
+    --c-e-maroon: 122 30 60;
+    --c-on-maroon: 247 213 226;
+    --c-timeoff: 0 0 0;
+
+    --c-ok: 78 216 160;
+    --c-ok-lo: 15 46 36;
+    --c-warn: 239 201 63;
+    --c-warn-lo: 46 39 17;
+    --c-bad: 240 113 79;
+    --c-bad-lo: 46 22 16;
+
+    --c-shadow: 0 0 0;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-surface text-hi font-sans antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display;
+    letter-spacing: -0.011em;
+  }
+
+  ::selection {
+    background: rgb(var(--c-pink));
+    color: #fff;
+  }
+
+  *:focus-visible {
+    outline: 2px solid rgb(var(--c-pink));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* The outlined pill used across the Track toolbar: Task / Project / Tags / Today / Week. */
+  .toolbar-pill {
+    @apply inline-flex h-8 items-center gap-1.5 rounded-pill border border-hairline-2 px-3
+           font-display text-[13px] font-medium text-mid transition-colors
+           hover:border-lo hover:text-hi;
+  }
+
+  .card {
+    @apply rounded-xl border border-hairline bg-panel;
+  }
+
+  .eyebrow {
+    @apply font-display text-2xs font-semibold uppercase tracking-[0.1em] text-lo;
+  }
+
+  .nav-section {
+    @apply px-3 pb-1.5 pt-4 font-display text-2xs font-semibold uppercase tracking-[0.12em] text-lo;
+  }
+
+  .scrollbar-slim::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+  }
+  .scrollbar-slim::-webkit-scrollbar-thumb {
+    @apply rounded-pill bg-hairline-2;
+  }
+  .scrollbar-slim::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@layer utilities {
+  .entry-logged {
+    color: rgb(var(--c-on-entry));
+  }
+  .entry-planned {
+    background: rgb(var(--c-e-planned));
+    color: rgb(var(--c-on-planned));
+  }
+}
+
+/* Free capacity, drawn into the calendar canvas during the capacity check. */
+.hatch-free {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgb(var(--c-ok) / 0.16) 0 6px,
+    rgb(var(--c-ok) / 0) 6px 13px
+  );
+}
