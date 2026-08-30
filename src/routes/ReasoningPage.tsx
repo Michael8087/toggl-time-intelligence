@@ -27,7 +27,7 @@ const CONTENTS: { id: string; label: string; tone: keyof typeof TONE }[] = [
   { id: 'analysis', label: 'Product analysis', tone: 'analysis' },
   { id: 'prioritization', label: 'Prioritization', tone: 'decision' },
   { id: 'hypothesis', label: 'The bet', tone: 'decision' },
-  { id: 'measure', label: 'Metrics & risks', tone: 'neutral' },
+  { id: 'measure', label: 'Metrics', tone: 'neutral' },
   { id: 'sources', label: 'Sources', tone: 'neutral' },
 ]
 
@@ -881,7 +881,7 @@ export function ReasoningPage() {
             id="measure"
             index="07"
             kicker="Metrics & risks"
-            title="What would tell me this is working, and what would sink it"
+            title="What would tell me this is working"
           >
             <Grid cols={3}>
               <Panel tone="decision" eyebrow="Activation" filled>
