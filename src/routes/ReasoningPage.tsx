@@ -666,7 +666,7 @@ export function ReasoningPage() {
             index="06"
             tone="decision"
             kicker="The bet"
-            title="An intelligent commitment layer, not an AI estimate"
+            title="An intelligent commitment layer, not a siloed data point"
           >
             <div className="rounded-xl border border-pink/40 bg-pink-lo/70 p-6">
               <div className="eyebrow text-pink">Product hypothesis</div>
