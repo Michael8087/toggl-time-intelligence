@@ -180,7 +180,7 @@ const CANDIDATES: Candidate[] = [
     name: 'Personal utilization',
     strategy: ['med', 'low', 'med'],
     feedback: 'low',
-    effort: 'S',
+    effort: 'M',
     verdict: 'no',
   },
   {
