@@ -749,7 +749,7 @@ export function ReasoningPage() {
             index="07"
             tone="strategy"
             kicker="Retention"
-            title="Initial scheduling gets me in. The living plan gives me a reason to come back."
+            title="Initial scheduling gets me in. The living plan brings me back."
           >
             <Grid cols={2}>
               <Panel eyebrow="Activation — day one">
