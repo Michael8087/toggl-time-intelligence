@@ -455,11 +455,20 @@ export function ReasoningPage() {
               I realistically commit to this work, and when can I actually do it?
             </Assertion>
 
-            <Panel tone="strategy" eyebrow="The Focus / 2.0 material, same direction" filled>
+            <Panel tone="strategy" eyebrow="The Focus / 2.0 page, same direction" filled>
               <p>
-                The freelancer-facing material promises that tracking builds{' '}
+                Its headline is already the whole thesis —{' '}
+                <a
+                  href="https://toggl.com/focus/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-hi underline-offset-2 hover:underline"
+                >
+                  “Toggl 2.0 turns time data into your next smart decision”
+                </a>{' '}
+                — and the freelancer promise underneath it is{' '}
                 <span className="text-hi">
-                  “a time history that makes every future estimate smarter.”
+                  “Build a time history that makes every future estimate smarter.”
                 </span>{' '}
                 Toggl already tells this persona the payoff is a better estimate; nothing in the
                 product hands them one. So the opportunity is not “add AI to Track” — it is to
@@ -918,9 +927,9 @@ export function ReasoningPage() {
                   ],
                   [
                     'strategy',
-                    'Toggl Focus / 2.0 material',
+                    'Toggl Focus — the 2.0 product page',
                     'The freelancer-facing promise that tracking makes future estimates smarter.',
-                    '',
+                    'https://toggl.com/focus/',
                   ],
                   [
                     'evidence',
@@ -966,11 +975,6 @@ export function ReasoningPage() {
                 </div>
               ))}
             </div>
-
-            <Prose className="text-[13px] text-lo">
-              No statistic, quotation or citation here is invented. Where I had an impression but
-              not a measurement, I have said so.
-            </Prose>
           </Section>
         </main>
       </div>
