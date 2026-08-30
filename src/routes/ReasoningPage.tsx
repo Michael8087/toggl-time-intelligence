@@ -440,7 +440,7 @@ export function ReasoningPage() {
                 for change management, not a request for a new feature. There’s also real feedback
                 on pricing and packaging, and a scatter of other gaps.
               </p>
-              <p className="mt-2.5">
+              <p className="mt-2.5 font-semibold text-hi">
                 None of this is exhaustive, though: feedback like this mostly reflects what people
                 already had and miss, not what they’ve never been offered or thought to ask for.
               </p>
@@ -463,15 +463,15 @@ export function ReasoningPage() {
               do with them.”
             </Quote>
 
-            <div className="text-center">
+            <div className="pt-3 pb-4 text-center">
               <div className="eyebrow text-pink">The shift, in Toggl’s framing</div>
-              <div className="mt-2.5 flex flex-wrap items-center justify-center gap-2">
-                <span className="rounded-lg bg-panel-2 px-3 py-1.5 font-display text-[13px] font-semibold text-mid">
-                  “where did our time go?”
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+                <span className="rounded-lg bg-panel-2 px-4 py-2 font-display text-[17px] font-semibold text-mid">
+                  “Where did our time go?”
                 </span>
-                <span className="font-display text-[15px] text-pink">→</span>
-                <span className="rounded-lg bg-panel-2 px-3 py-1.5 font-display text-[13px] font-semibold text-hi">
-                  “what should we do next?”
+                <span className="font-display text-[19px] text-pink">→</span>
+                <span className="rounded-lg bg-panel-2 px-4 py-2 font-display text-[17px] font-semibold text-hi">
+                  “What should we do next?”
                 </span>
               </div>
             </div>
@@ -496,22 +496,22 @@ export function ReasoningPage() {
 
             <Panel tone="strategy" eyebrow="From the IC's Perspective" filled>
               <p>
-                Its headline is already the whole thesis —{' '}
                 <a
                   href="https://toggl.com/focus/"
                   target="_blank"
                   rel="noreferrer"
                   className="text-hi underline-offset-2 hover:underline"
                 >
-                  “Toggl 2.0 turns time data into your next smart decision”
+                  “Toggl 2.0 turns time data into your next smart decision.”
                 </a>{' '}
-                — and the freelancer promise underneath it is{' '}
+                The freelancer promise underneath it is{' '}
                 <span className="text-hi">
                   “Build a time history that makes every future estimate smarter.”
                 </span>{' '}
-                Toggl already tells this persona the payoff is a better estimate; nothing in the
-                product hands them one. So the opportunity is not “add AI to Track” — it is to
-                connect three things the product keeps apart:
+                Toggl already tells this persona the payoff is a better estimate, but they don’t
+                get it in the product in an elegant way. So the opportunity is not “add AI to
+                Track” — it is to connect the things the product keeps apart, and fill the gaps
+                where they exist:
               </p>
               <div className="mt-3">
                 <Flow
