@@ -535,7 +535,7 @@ export function ReasoningPage() {
             index="04"
             tone="analysis"
             kicker="Product analysis"
-            title="Toggl is missing the sequence"
+            title="Toggl has the ingredients, but they are isolated and unfinished"
             lede="I went through the product first: Timer in all four views — Calendar, Split View, Time Log, Timesheet, Analyze, Plan, the AI Copilot and more."
           >
             <Panel tone="analysis" eyebrow="What I actually found" filled>
