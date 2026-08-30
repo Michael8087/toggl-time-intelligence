@@ -80,7 +80,7 @@ export default {
         'fade-up': 'fade-up 0.32s cubic-bezier(0.22,1,0.36,1) both',
         'fade-in': 'fade-in 0.24s ease-out both',
         'pulse-ring': 'pulse-ring 1.8s ease-out infinite',
-        blink: 'blink 0.65s ease-in-out 3',
+        blink: 'blink 1.15s ease-in-out 3',
       },
     },
   },

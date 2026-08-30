@@ -14,7 +14,6 @@ import {
   Layers,
   ListFilter,
   SignalHigh,
-  Sparkles,
   Tag,
   Circle,
   CheckCircle2,
@@ -131,12 +130,6 @@ function Row({ task, onOpen }: { task: Task; onOpen: () => void }) {
               {t}
             </span>
           ))}
-          {unplanned && (
-            <span className="inline-flex items-center gap-1 rounded-pill border border-pink/35 bg-pink-lo px-1.5 py-0.5 text-2xs font-semibold text-pink">
-              <Sparkles size={10} />
-              Ready to plan
-            </span>
-          )}
           {isHero && acceptedHours && (
             <span className="tnum text-2xs text-mid">
               {formatDuration(trackedHours)} / {formatDuration(acceptedHours)}
