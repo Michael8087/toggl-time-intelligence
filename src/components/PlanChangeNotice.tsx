@@ -161,25 +161,17 @@ export function ChangeTrigger() {
   const waiting = phase === 'working' && !simRunning && !simDone && trackedHours > 0
 
   return (
-    <div
-      className={clsx(
-        'flex flex-wrap items-center gap-2 border-b border-hairline px-5 py-2 transition-colors',
-        waiting ? 'animate-nudge bg-pink-lo' : 'bg-panel',
-      )}
-    >
+    <div className="flex flex-wrap items-center gap-2 border-b border-hairline bg-panel px-5 py-2">
       <span
+        // Re-keyed so the three blinks replay each time the clock stops.
+        key={waiting ? 'waiting' : 'idle'}
         className={clsx(
           'font-display text-2xs font-semibold uppercase tracking-[0.1em]',
-          waiting ? 'text-pink' : 'text-lo',
+          waiting ? 'animate-blink text-pink' : 'text-lo',
         )}
       >
         Simulate a change
       </span>
-      {waiting && (
-        <span className="rounded-pill border border-pink/40 px-2 py-0.5 font-display text-2xs font-semibold text-pink">
-          optional
-        </span>
-      )}
       {remaining.map((c) => (
         <button
           key={c.id}

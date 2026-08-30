@@ -268,23 +268,32 @@ function DemoBar() {
         <span className="flex items-center rounded-pill bg-panel-2 p-0.5 ring-1 ring-hairline">
           {(
             [
-              ['A', 'Plan on the task'],
-              ['B', 'Plan on the calendar'],
+              [
+                'A',
+                'Compact',
+                'Estimate, capacity and scheduling in one sheet on the task.',
+              ],
+              [
+                'B',
+                'In place',
+                'Estimate on the task; scheduling on the calendar, where planning already lives.',
+              ],
             ] as const
-          ).map(([v, label]) => (
+          ).map(([v, name, description]) => (
             <button
               key={v}
               onClick={() => {
                 setVariant(v)
                 navigate('/tasks')
               }}
-              title={`Variant ${v} — ${label}`}
+              title={`Variant ${v} · ${name} — ${description}`}
               className={clsx(
-                'rounded-pill px-2 py-0.5 font-display text-[11px] font-semibold transition-colors',
+                'inline-flex items-center gap-1.5 rounded-pill px-2.5 py-0.5 font-display text-[11px] font-semibold transition-colors',
                 variant === v ? 'bg-pink text-white' : 'text-mid hover:text-hi',
               )}
             >
-              {v}
+              <span className={clsx(variant === v ? 'text-white/70' : 'text-lo')}>{v}</span>
+              {name}
             </button>
           ))}
         </span>
