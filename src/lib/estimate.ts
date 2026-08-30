@@ -65,7 +65,7 @@ export function buildEstimate(_task: Task, mode: EstimateMode = 'newcomer'): Est
       highHours: 15,
       confidence: 'Low',
       summary:
-        'You signed up this morning, so none of this comes from your own history. It comes from the task description, the client’s existing project data and the open dependency — enough to commit to a date, not enough to be precise.',
+        'You signed up this morning, so none of this comes from your own history. It comes from the task description and the client’s existing project data — enough to commit to a date, not enough to be precise. It sharpens with every task you finish: your own tracked time starts carrying the estimate from here, and the range narrows as it does.',
       factors: [
         {
           id: 'baseline',
@@ -146,7 +146,7 @@ export function buildEstimate(_task: Task, mode: EstimateMode = 'newcomer'): Est
     ],
     sources: [
       { label: 'Your history', weight: 35, note: '2 tasks tracked since you signed up' },
-      { label: 'This project', weight: 35, note: 'Comparable components, dependency history' },
+      { label: 'This project', weight: 35, note: 'Comparable components and how long they ran' },
       { label: 'Workspace', weight: 15, note: 'Similar frontend work by other contributors' },
       { label: 'Task scope', weight: 15, note: 'Scope signals read from the description' },
     ],

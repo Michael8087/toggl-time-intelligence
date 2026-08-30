@@ -53,7 +53,6 @@ interface State {
   /** How many of the simulated entries have been revealed. */
   revealed: number
   simRunning: boolean
-  showNotes: boolean
   /** The task drawer, opened over the Tasks list. */
   drawerTaskId: string | null
   /** Which sub-view of the drawer's Time section is open. */
@@ -79,7 +78,6 @@ type Action =
   | { type: 'finishSim' }
   | { type: 'complete' }
   | { type: 'report' }
-  | { type: 'toggleNotes' }
   | { type: 'openDrawer'; taskId: string }
   | { type: 'closeDrawer' }
   | { type: 'setTimeView'; view: State['timeView'] }
@@ -98,7 +96,6 @@ const initialState: State = {
   slots: [],
   revealed: 0,
   simRunning: false,
-  showNotes: false,
   drawerTaskId: null,
   timeView: 'summary',
   activeChange: null,
@@ -122,7 +119,7 @@ function reducer(state: State, action: Action): State {
         phase: state.variant === 'B' ? 'schedule' : 'capacity',
       }
     case 'setVariant':
-      return { ...initialState, variant: action.variant, showNotes: state.showNotes }
+      return { ...initialState, variant: action.variant, }
     case 'addSlot':
       return { ...state, slots: [...state.slots, action.slot] }
     case 'setSlots':
@@ -153,8 +150,6 @@ function reducer(state: State, action: Action): State {
       return { ...state, phase: 'complete', revealed: SIMULATED_ENTRIES.length, simRunning: false }
     case 'report':
       return { ...state, phase: 'reported' }
-    case 'toggleNotes':
-      return { ...state, showNotes: !state.showNotes }
     case 'openDrawer':
       return { ...state, drawerTaskId: action.taskId, timeView: 'summary' }
     case 'closeDrawer':
@@ -174,10 +169,10 @@ function reducer(state: State, action: Action): State {
         appliedChanges: state.activeChange
           ? [...state.appliedChanges, state.activeChange.id]
           : state.appliedChanges,
-        activeChange: null,
+        activeChange: null
       }
     case 'reset':
-      return { ...initialState, variant: state.variant, showNotes: state.showNotes }
+      return { ...initialState, variant: state.variant, }
     default:
       return state
   }
@@ -225,7 +220,6 @@ interface DemoValue extends State {
   finishSim: () => void
   complete: () => void
   report: () => void
-  toggleNotes: () => void
   reset: () => void
 }
 
@@ -388,7 +382,6 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     finishSim: () => dispatch({ type: 'finishSim' }),
     complete: () => dispatch({ type: 'complete' }),
     report: () => dispatch({ type: 'report' }),
-    toggleNotes: () => dispatch({ type: 'toggleNotes' }),
     reset: () => dispatch({ type: 'reset' }),
   }
 

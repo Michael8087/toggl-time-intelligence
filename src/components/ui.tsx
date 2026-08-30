@@ -1,7 +1,6 @@
 import clsx from 'clsx'
 import { ChevronDown, Info } from 'lucide-react'
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
-import { useDemo } from '../state/DemoContext'
 
 /* ------------------------------------------------------------------ Button */
 
@@ -287,28 +286,6 @@ export function StepHint({
       </span>
       <span className="min-w-[12rem] flex-1 text-[13px] leading-relaxed text-hi">{children}</span>
       {action}
-    </div>
-  )
-}
-
-/* ------------------------------------------------------- Case-study note -- */
-
-export function Note({ children, title }: { children: ReactNode; title?: string }) {
-  const { showNotes } = useDemo()
-  if (!showNotes) return null
-  return (
-    <div className="animate-fade-in rounded-xl border border-dashed border-warn/30 bg-warn-lo/60 px-4 py-3">
-      <div className="flex gap-2.5">
-        <Info size={15} className="mt-0.5 shrink-0 text-warn" />
-        <div className="min-w-0">
-          {title && (
-            <div className="font-display text-2xs font-bold uppercase tracking-[0.1em] text-warn">
-              {title}
-            </div>
-          )}
-          <div className="mt-1 text-[13px] leading-relaxed text-warn/85">{children}</div>
-        </div>
-      </div>
     </div>
   )
 }

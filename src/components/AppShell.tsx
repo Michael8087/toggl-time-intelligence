@@ -16,7 +16,6 @@ import {
   RotateCcw,
   Send,
   Settings,
-  Sparkles,
   ScrollText,
   TrendingUp,
   Users,
@@ -251,7 +250,7 @@ function Sidebar() {
 
 /** Sits above the content: the case-study controls, kept out of the product chrome. */
 function DemoBar() {
-  const { showNotes, toggleNotes, reset, variant, setVariant } = useDemo()
+  const { reset, variant, setVariant } = useDemo()
   const navigate = useNavigate()
 
   return (
@@ -303,18 +302,6 @@ function DemoBar() {
           <ScrollText size={11} />
           Reasoning
         </Link>
-        <button
-          onClick={toggleNotes}
-          className={clsx(
-            'inline-flex h-6 items-center gap-1.5 rounded-pill border px-2.5 font-display text-[11px] font-semibold transition-colors',
-            showNotes
-              ? 'border-warn/40 bg-warn-lo text-warn'
-              : 'border-hairline-2 text-mid hover:border-lo hover:text-hi',
-          )}
-        >
-          <Sparkles size={11} />
-          Case-study notes
-        </button>
         <button
           onClick={() => {
             reset()

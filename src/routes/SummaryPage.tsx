@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { Note, StatStrip, ToolbarPill } from '../components/ui'
+import {StatStrip, ToolbarPill} from '../components/ui'
 import { useDemo } from '../state/DemoContext'
 import { accuracyPct, estimateHistory } from '../lib/estimate'
 import { HERO_TASK, USER } from '../data/demo'
@@ -206,13 +206,6 @@ export function SummaryPage() {
           </div>
         </div>
 
-        <Note title="The compounding argument">
-          Each loop through estimate → schedule → track → compare makes the next estimate
-          better, which makes the next capacity check more trustworthy, which makes the next
-          commitment safer. That is the part a competitor cannot copy by shipping an estimate
-          button: it needs the tracked history, and Toggl is where the tracked history already
-          lives.
-        </Note>
       </div>
     </div>
   )

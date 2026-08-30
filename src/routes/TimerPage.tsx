@@ -20,7 +20,7 @@ import {
   Settings,
 } from 'lucide-react'
 import { CalendarLegend, WeekCalendar } from '../components/WeekCalendar'
-import { Button, Note, StepHint, TooltipCard } from '../components/ui'
+import {Button, StepHint, TooltipCard} from '../components/ui'
 import { PlanInTimer, PlanTimePopover } from '../components/PlanInTimer'
 import {
   ChangeTrigger,
@@ -449,12 +449,6 @@ export function TimerPage() {
 
       <div className="space-y-4 border-t border-hairline px-5 py-4">
         <CalendarLegend />
-        <Note title="Built on what is already there">
-          Split view already puts logged time on the left of each day and planned time on the
-          right. That is Toggl 2.0’s existing vocabulary for plan versus actual, and it is why this
-          concept did not need a new screen — only a way to get something into the right-hand
-          lane without typing it.
-        </Note>
       </div>
     </div>
   )

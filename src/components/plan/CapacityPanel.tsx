@@ -9,7 +9,7 @@ import {
   Eye,
   Lock,
 } from 'lucide-react'
-import { Button, Note } from '../ui'
+import {Button} from '../ui'
 import { CalendarLegend, WeekCalendar } from '../WeekCalendar'
 import { useDemo } from '../../state/DemoContext'
 
@@ -220,16 +220,6 @@ export function CapacityPanel() {
             />
           </div>
           <CalendarLegend showFree />
-
-          <div className="mt-5">
-            <Note title="Why this is the moment that matters">
-              Estimation on its own is cheap — plenty of tools will guess a number. The
-              commitment problem is not “how long is this?”, it is “can I actually fit this?”.
-              Toggl is one of very few products already holding both halves: the estimate
-              signal and the real calendar. This screen is the join, and it is why the concept
-              belongs in Toggl rather than in a project tracker.
-            </Note>
-          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-3 border-t border-hairline px-5 py-4">

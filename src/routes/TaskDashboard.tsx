@@ -11,7 +11,7 @@ import {
   Wallet,
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { Button, Note, StatStrip, Tabs, ToolbarPill } from '../components/ui'
+import {Button, StatStrip, Tabs, ToolbarPill} from '../components/ui'
 import { useDemo } from '../state/DemoContext'
 import { HERO_TASK, PROJECTS, USER } from '../data/demo'
 import { accuracyPct } from '../lib/estimate'
@@ -302,7 +302,7 @@ export function TaskDashboard() {
                     {
                       k: 'Confidence',
                       v: 'Medium → High',
-                      d: 'Four close comparables, one open dependency pattern learned.',
+                      d: 'Four close comparables, and a first read on your own pace.',
                     },
                   ].map((r) => (
                     <div key={r.k} className="bg-panel px-5 py-4">
@@ -315,19 +315,11 @@ export function TaskDashboard() {
 
                 <div className="space-y-4 px-5 py-4">
                   <p className="text-[13px] leading-relaxed text-mid">
-                    The dependency factor is the interesting one. This task carried{' '}
-                    <strong className="text-hi">+1h for an unfinished API</strong> and the rework
-                    never materialised, because the contract landed on time. One example is not
-                    evidence — but if the next two behave the same way, that contingency shrinks
-                    on its own.
+                    The ramp-up factor is the interesting one. This task carried{' '}
+                    <strong className="text-hi">+1h for being your first here</strong>, and you
+                    finished inside the estimate anyway. One example is not evidence — but if the
+                    next two behave the same way, that allowance shrinks on its own.
                   </p>
-                  <Note title="Guarding against stale history">
-                    Estimates weight recent work more heavily on purpose. Component tasks here
-                    got roughly 15% faster once an AI coding assistant entered the workflow — a
-                    model averaging a flat year of history would still be quoting the old pace
-                    and quietly overcharging the client. The learning loop has to be able to
-                    forget.
-                  </Note>
                 </div>
 
                 {phase === 'complete' && (

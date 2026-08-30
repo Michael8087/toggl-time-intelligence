@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { Check, Download, Link2, Send, ShieldCheck } from 'lucide-react'
-import { Button, Note, StatStrip, ToolbarPill } from '../components/ui'
+import {Button, StatStrip, ToolbarPill} from '../components/ui'
 import { useDemo } from '../state/DemoContext'
 import { COMPLETED_TASKS, HERO_TASK, PROJECTS, USER } from '../data/demo'
 import { formatDate, formatDuration, weekDays, DEMO_NOW } from '../lib/time'
@@ -190,13 +190,6 @@ export function ReportsPage() {
           </div>
         </div>
 
-        <Note title="Why the report is the easy part">
-          Everything on this page is a by-product. The estimate came from the planning step, the
-          actuals from automatic tracking, the variance from the difference. Reporting stops
-          being a Friday-afternoon reconstruction job and becomes a read of data that was
-          already correct — which is also what makes the accuracy number trustworthy enough to
-          feed back into estimating.
-        </Note>
       </div>
     </div>
   )

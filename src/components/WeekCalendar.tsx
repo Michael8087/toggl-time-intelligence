@@ -109,7 +109,6 @@ export interface WeekCalendarProps {
   className?: string
 }
 
-
 /** Explains the washed-out region rather than leaving it a mystery. */
 function OffHoursTip({ day, anchor }: { day: Date; anchor: 'top' | 'bottom' }) {
   return (

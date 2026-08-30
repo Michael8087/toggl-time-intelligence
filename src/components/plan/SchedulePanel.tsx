@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { AlertTriangle, CheckCircle2, Hand, RefreshCw } from 'lucide-react'
-import { Button, Note } from '../ui'
+import {Button} from '../ui'
 import { CalendarLegend, WeekCalendar } from '../WeekCalendar'
 import { useDemo } from '../../state/DemoContext'
 
@@ -35,7 +35,7 @@ export function SchedulePanel() {
         <div className="flex flex-wrap items-center gap-2 border-b border-hairline bg-pink-lo px-5 py-3">
           <span className="font-display text-[14px] font-semibold text-hi">Proposed schedule</span>
           <span className="ml-auto text-2xs text-mid">
-            Earliest fit that respects your calendar, the dependency and the deadline
+            Earliest fit that respects your calendar and the deadline
           </span>
         </div>
 
@@ -127,16 +127,6 @@ export function SchedulePanel() {
             />
           </div>
           <CalendarLegend showFree />
-
-          <div className="mt-5">
-            <Note title="On automation that can be overruled">
-              The scheduler fills the earliest free windows first and never optimises past what
-              a person can follow — you can read the result and see why each block landed where
-              it did. Every proposal stays draggable, and validation re-runs on release rather
-              than silently repairing your edit. Automation the user cannot overrule is
-              automation they stop trusting the first time it is wrong.
-            </Note>
-          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-3 border-t border-hairline px-5 py-4">

@@ -41,7 +41,7 @@ import {
   hoursBetween,
   parse,
 } from '../lib/time'
-import { Button, Note, StepHint } from './ui'
+import {Button, StepHint} from './ui'
 import { PlanSheet } from './PlanSheet'
 import { PlanInTimerHint } from './PlanInTimer'
 
@@ -230,15 +230,6 @@ function PlannedTimeEditor() {
           </div>
         </div>
       )}
-
-      <div className="mt-5">
-        <Note title="What actually changed">
-          These rows are Toggl 2.0’s existing planned-time editor, unmodified. Today a contractor
-          types every one of them by hand — pick a date, pick a start, pick an end, repeat.
-          The concept does not add a field. It fills these in, from an estimate the user
-          accepted and capacity Toggl already knows about.
-        </Note>
-      </div>
     </div>
   )
 }
@@ -455,15 +446,6 @@ function TimeSection() {
           </StepHint>
         </>
       )}
-
-      <div className="mt-4">
-        <Note title="The gap, stated plainly">
-          Toggl 2.0 already ships all three of these numbers. In practice the middle one is almost
-          always empty, because filling it means hand-entering blocks that respect a calendar,
-          a dependency and a deadline the user has to hold in their head. That empty box is the
-          whole opportunity.
-        </Note>
-      </div>
     </>
   )
 }

@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { ArrowRight, Eye, Pencil, X } from 'lucide-react'
-import { Button, Note } from './ui'
+import {Button} from './ui'
 import { useDemo } from '../state/DemoContext'
 import { PLAN_CHANGES } from '../data/demo'
 import { formatDayLong, formatDuration, formatRange, hoursBetween, parse } from '../lib/time'
@@ -93,16 +93,6 @@ export function PlanChangeNotice() {
               <span className="text-2xs text-mid">
                 Nothing moves until you choose.
               </span>
-            </div>
-
-            <div className="mt-3">
-              <Note title="Why this is not a dependency system">
-                Toggl has no concept of one task blocking another, and inventing one would
-                mean asking users to declare relationships they will never maintain. Every
-                trigger here is instead something Toggl can observe by itself: its own tracked
-                time, a connected calendar, an edit to the task. The plan stays honest without
-                anyone having to model the work first.
-              </Note>
             </div>
           </div>
 

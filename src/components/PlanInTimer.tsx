@@ -12,7 +12,7 @@ import {
   Wand2,
   X,
 } from 'lucide-react'
-import { Button, Note, StepHint } from './ui'
+import {Button, StepHint} from './ui'
 import { useDemo } from '../state/DemoContext'
 import { HERO_TASK } from '../data/demo'
 import {
@@ -114,16 +114,6 @@ export function PlanInTimer() {
             Worst case is {formatDuration(worstCase)}, which is more than you have free.
           </span>
         )}
-      </div>
-
-      <div className="mt-3">
-        <Note title="Why this variant exists">
-          Toggl already lets you plan time by clicking the calendar. Variant A puts scheduling
-          in a sheet over the task, which is tidier to demo but invents a second place to do
-          something the product can already do. This one keeps the estimate on the task, where
-          it is a property of the work, and moves placement to the surface that owns it — so
-          the automation is a shortcut through an existing gesture rather than a parallel path.
-        </Note>
       </div>
     </div>
   )

@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { useState } from 'react'
 import { ChevronDown, Minus, Plus, Sparkles } from 'lucide-react'
-import { Button, Note } from '../ui'
+import {Button} from '../ui'
 import { useDemo } from '../../state/DemoContext'
 import { factorTotal } from '../../lib/estimate'
 import { formatDuration } from '../../lib/time'
@@ -200,12 +200,6 @@ export function EstimatePanel() {
                 </div>
               </div>
 
-              <Note title="Design decision">
-                The estimate is an auditable sum, not one opaque number. A contractor arguing
-                with “the AI said 10 hours” has nowhere to go; one arguing with “+1h for the
-                open dependency” can strike that line and move on. Every factor is a row you
-                can disagree with individually.
-              </Note>
             </div>
           )}
         </div>
@@ -259,16 +253,6 @@ export function EstimatePanel() {
           </span>
         </div>
       </div>
-
-      {!open && (
-        <div className="mt-4">
-          <Note title="Why not a chat box">
-            Toggl 2.0’s Copilot can already answer “how long will this take?” — if you know to ask.
-            Here the estimate is simply present when the task arrives. The intelligence is a
-            property of the task surface, not a conversation you have to start.
-          </Note>
-        </div>
-      )}
     </div>
   )
 }

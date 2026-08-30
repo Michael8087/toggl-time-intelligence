@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 import { useDemo } from '../state/DemoContext'
 import { TaskDrawer } from '../components/TaskDrawer'
-import { Button, Note, StepHint } from '../components/ui'
+import {Button, StepHint} from '../components/ui'
 import { COMPLETED_TASKS, HERO_TASK, OTHER_TASKS, PROJECTS, USER } from '../data/demo'
 import { formatDuration } from '../lib/time'
 import type { Task } from '../types'
@@ -275,13 +275,6 @@ export function TasksPage() {
               <strong>nothing</strong> — the four finished tasks below belong to the client’s
               other contractors. Open <strong>Implement navigation component</strong> to start.
             </StepHint>
-            <Note title="The W0 constraint, taken literally">
-              Everything in this prototype has to work for a user with zero personal history,
-              because that is the only user week one has. So the estimate leans on the client’s
-              existing project data and the task’s own scope, and the two steps that need no
-              history at all — the capacity check and automatic scheduling — carry the day-one
-              value. Personal history makes it sharper by Friday; it is not the price of entry.
-            </Note>
           </div>
         )}
 
