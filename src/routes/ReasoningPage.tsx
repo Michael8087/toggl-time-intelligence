@@ -290,8 +290,7 @@ export function ReasoningPage() {
           <div className="border-b border-hairline py-10">
             <div className="eyebrow text-lo">Toggl 2.0 · product case study</div>
             <h1 className="mt-4 font-display text-[32px] font-bold leading-[1.12] tracking-[-0.02em] text-hi sm:text-[40px]">
-              Why I built the commitment layer,
-              <br className="hidden sm:block" /> and not the most-requested feature
+              AI scheduler for time intelligence
             </h1>
             <p className="mt-4 max-w-2xl text-[15.5px] leading-relaxed text-mid">
               The argument behind the prototype: what Toggl’s users are saying, what Toggl says it
