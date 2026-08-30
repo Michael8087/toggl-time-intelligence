@@ -41,8 +41,6 @@ export interface Commitment {
   end: string // ISO
   kind: 'task' | 'meeting' | 'personal'
   projectId?: string
-  /** Upstream dependency work — highlighted during the capacity check. */
-  isDependencyWork?: boolean
 }
 
 /** A planned block of work created by the scheduler (or edited by the user). */

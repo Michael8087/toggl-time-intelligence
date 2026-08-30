@@ -600,7 +600,6 @@ export function WeekCalendar({
                           'cursor-pointer',
                           'entry-planned absolute overflow-hidden rounded px-1.5 py-1',
                           plannedZ,
-                          c.isDependencyWork && 'border-l-[3px] border-warn',
                         )}
                         style={{ ...plannedLane, top: yOf(s), height: hOf(s, e) }}
                         title={`${c.title} · ${formatRange(s, e)}`}

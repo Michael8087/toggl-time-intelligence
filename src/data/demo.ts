@@ -182,7 +182,6 @@ export const COMMITMENTS: Commitment[] = [
     end: iso(at(0, 12)),
     kind: 'task',
     projectId: HERO_PROJECT_ID,
-    isDependencyWork: true,
   },
   {
     id: 'c2',
