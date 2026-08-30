@@ -536,7 +536,16 @@ export function ReasoningPage() {
             title="Toggl has the ingredients, but they are isolated and unfinished"
             lede="I went through the product in detail: Timer in all four views — Calendar, Split View, Time Log, Timesheet, Analyze, Plan, the AI Copilot and more."
           >
-            <Panel tone="analysis" eyebrow="What I actually found" filled>
+            <Panel tone="analysis" eyebrow="General feedback">
+              <p className="text-[13.5px] leading-relaxed text-mid">
+                Plenty of smaller things would help an individual contributor day to day — UX
+                polish, missing project-management functionality, simple bug fixes. None of them
+                made the cut here: on their own they rarely bring immediate value, rarely fit a
+                clear strategic direction, and rarely carry much weight by themselves.
+              </p>
+            </Panel>
+
+            <Panel tone="analysis" eyebrow="The specific gap" filled>
               <p className="text-hi">The intelligence is fragmented, and it waits to be asked.</p>
               <p className="mt-2.5 text-[13.5px] leading-relaxed text-mid">
                 Split view already draws logged time on the left of each day and planned on the
@@ -546,10 +555,7 @@ export function ReasoningPage() {
                 if you know to ask it. The AI answers; the calendar, the deadline and the decision
                 stay yours.
               </p>
-            </Panel>
-
-            <Panel tone="analysis" eyebrow="The specific gap" filled>
-              <p>
+              <p className="mt-2.5 text-[13.5px] leading-relaxed text-mid">
                 Every task in 2.0 already carries <span className="text-hi">Estimate</span>,{' '}
                 <span className="text-hi">Planned</span> and <span className="text-hi">Logged</span>
                 . Logged fills itself, Estimate gets a guess, and Planned is almost always empty —
@@ -581,7 +587,7 @@ export function ReasoningPage() {
                 [
                   ['evidence', 'User feedback', 'what hurts'],
                   ['strategy', 'Strategy', 'where the company is going'],
-                  ['analysis', 'Product analysis', 'what is feasible and differentiated'],
+                  ['analysis', 'Product analysis', 'what is inconsistent and fragmented'],
                 ] as const
               ).map(([tone, k, v]) => (
                 <div
