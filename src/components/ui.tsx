@@ -251,6 +251,46 @@ export function Progress({
   )
 }
 
+/* ------------------------------------------------------------ Step hint --
+ * The demo's own wayfinding. The flow crosses two surfaces — the task panel
+ * and the calendar — and nothing in the product itself would tell a first-time
+ * viewer to make that jump, so the prototype says it out loud.               */
+
+export function StepHint({
+  step,
+  badge,
+  children,
+  action,
+  className,
+}: {
+  step: number
+  /** An extra chip, e.g. the "Day 1" framing on the first step. */
+  badge?: string
+  children: ReactNode
+  action?: ReactNode
+  className?: string
+}) {
+  return (
+    <div
+      className={clsx(
+        'flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-pink/30 bg-pink-lo px-4 py-3',
+        className,
+      )}
+    >
+      {badge && (
+        <span className="inline-flex items-center rounded-pill bg-pink px-2 py-0.5 font-display text-2xs font-bold text-white">
+          {badge}
+        </span>
+      )}
+      <span className="inline-flex items-center rounded-pill border border-pink/40 px-2 py-0.5 font-display text-2xs font-bold text-pink">
+        Step {step}
+      </span>
+      <span className="min-w-[12rem] flex-1 text-[13px] leading-relaxed text-hi">{children}</span>
+      {action}
+    </div>
+  )
+}
+
 /* ------------------------------------------------------- Case-study note -- */
 
 export function Note({ children, title }: { children: ReactNode; title?: string }) {

@@ -18,10 +18,9 @@ import {
   Pause,
   Plus,
   Settings,
-  Sparkles,
 } from 'lucide-react'
 import { CalendarLegend, WeekCalendar } from '../components/WeekCalendar'
-import { Button, Note, TooltipCard } from '../components/ui'
+import { Button, Note, StepHint, TooltipCard } from '../components/ui'
 import {
   ChangeTrigger,
   PlanAdjustedNotice,
@@ -315,18 +314,22 @@ function SimBar() {
 
   if (phase === 'scheduled') {
     return (
-      <div className="flex flex-wrap items-center gap-3 border-b border-hairline bg-ok-lo px-5 py-3">
-        <Sparkles size={16} className="shrink-0 text-ok" />
-        <span className="min-w-0 text-[13px] text-hi">
-          <span className="font-display font-semibold">
-            {formatDuration(planHours)} planned across {slots.length} blocks.
-          </span>{' '}
-          Tracking starts on its own when the first one begins.
-        </span>
-        <Button size="sm" className="ml-auto" onClick={startSim}>
-          <Play size={13} fill="currentColor" />
-          Run the week
-        </Button>
+      <div className="border-b border-hairline bg-panel px-5 py-3">
+        <StepHint
+          step={3}
+          action={
+            <Button size="sm" onClick={startSim}>
+              <Play size={13} fill="currentColor" />
+              Run the week
+            </Button>
+          }
+        >
+          <strong>
+            {formatDuration(planHours)} planned across {slots.length} blocks
+          </strong>{' '}
+          — on the right of each day below. Run the week to watch tracked time fill in on the
+          left, then see what Toggl does when reality diverges.
+        </StepHint>
       </div>
     )
   }

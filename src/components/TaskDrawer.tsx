@@ -29,6 +29,7 @@ import {
   X,
 } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useDemo } from '../state/DemoContext'
 import { HERO_TASK, PROJECTS, USER } from '../data/demo'
 import {
@@ -40,7 +41,7 @@ import {
   hoursBetween,
   parse,
 } from '../lib/time'
-import { Button, Note } from './ui'
+import { Button, Note, StepHint } from './ui'
 import { PlanSheet } from './PlanSheet'
 
 /* ---------------------------------------------------------------- property */
@@ -303,7 +304,9 @@ function LoggedTimeList() {
 }
 
 function TimeSection() {
+  const navigate = useNavigate()
   const {
+    closeDrawer,
     phase,
     planHours,
     acceptedHours,
@@ -407,10 +410,30 @@ function TimeSection() {
       )}
 
       {planHours > 0 && slots.length > 0 && phase === 'scheduled' && (
-        <p className="mt-3 text-[13px] leading-relaxed text-mid">
-          Planned time was generated from the estimate and dropped into your calendar. Tracking
-          starts on its own when the first block begins.
-        </p>
+        <>
+          <p className="mt-3 text-[13px] leading-relaxed text-mid">
+            Planned time was generated from the estimate and dropped into your calendar.
+            Tracking starts on its own when the first block begins.
+          </p>
+          <StepHint
+            step={2}
+            className="mt-3"
+            action={
+              <Button
+                size="sm"
+                onClick={() => {
+                  closeDrawer()
+                  navigate('/timer')
+                }}
+              >
+                Open Timer
+                <ArrowRight size={14} />
+              </Button>
+            }
+          >
+            Now go and watch it happen.
+          </StepHint>
+        </>
       )}
 
       <div className="mt-4">

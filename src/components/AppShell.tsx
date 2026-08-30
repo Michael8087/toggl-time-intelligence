@@ -132,6 +132,9 @@ function Rail() {
 
 function Sidebar() {
   const { pathname } = useLocation()
+  const { phase } = useDemo()
+  // Point the eye at the surface the plan just landed on.
+  const nudgeTimer = phase === 'scheduled' && !pathname.startsWith('/timer')
 
   const isActive = (to?: string) => {
     if (!to) return false
@@ -177,6 +180,12 @@ function Sidebar() {
                       className={item.tone ?? (active ? 'text-pink' : 'text-mid')}
                     />
                     <span className="truncate">{item.label}</span>
+                    {item.to === '/timer' && nudgeTimer && (
+                      <span className="relative ml-auto grid h-2 w-2 place-items-center">
+                        <span className="h-2 w-2 rounded-full bg-pink" />
+                        <span className="absolute h-2 w-2 animate-pulse-ring rounded-full bg-pink" />
+                      </span>
+                    )}
                     {item.star && (
                       <Star size={11} className="ml-auto shrink-0 fill-mid text-mid" />
                     )}

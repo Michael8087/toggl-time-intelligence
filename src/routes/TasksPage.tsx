@@ -1,9 +1,11 @@
 import clsx from 'clsx'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   ArrowDown,
   ArrowUp,
   ChevronDown,
+  ArrowRight,
   ChevronsUpDown,
   ClipboardList,
   DollarSign,
@@ -19,7 +21,7 @@ import {
 } from 'lucide-react'
 import { useDemo } from '../state/DemoContext'
 import { TaskDrawer } from '../components/TaskDrawer'
-import { Note } from '../components/ui'
+import { Button, Note, StepHint } from '../components/ui'
 import { COMPLETED_TASKS, HERO_TASK, OTHER_TASKS, PROJECTS, USER } from '../data/demo'
 import { formatDuration } from '../lib/time'
 import type { Task } from '../types'
@@ -222,6 +224,7 @@ function Th({
 
 export function TasksPage() {
   const { openDrawer, phase } = useDemo()
+  const navigate = useNavigate()
   const [sortKey, setSortKey] = useState<SortKey>('priority')
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
 
@@ -269,17 +272,11 @@ export function TasksPage() {
 
         {(phase === 'intake' || phase === 'estimate') && (
           <div className="space-y-3 px-5 pb-4">
-            <div className="flex flex-wrap items-center gap-3 rounded-xl border border-pink/30 bg-pink-lo px-4 py-3">
-              <span className="inline-flex items-center gap-1.5 rounded-pill bg-pink px-2 py-0.5 font-display text-2xs font-bold text-white">
-                Day 1
-              </span>
-              <span className="min-w-0 text-[13px] leading-relaxed text-hi">
-                You signed up this morning and connected your calendar. You have tracked{' '}
-                <strong>nothing</strong> — the four finished tasks below belong to the client’s
-                other contractors. Open{' '}
-                <strong>Implement navigation component</strong> to start.
-              </span>
-            </div>
+            <StepHint step={1} badge="Day 1">
+              You signed up this morning and connected your calendar. You have tracked{' '}
+              <strong>nothing</strong> — the four finished tasks below belong to the client’s
+              other contractors. Open <strong>Implement navigation component</strong> to start.
+            </StepHint>
             <Note title="The W0 constraint, taken literally">
               Everything in this prototype has to work for a user with zero personal history,
               because that is the only user week one has. So the estimate leans on the client’s
@@ -287,6 +284,23 @@ export function TasksPage() {
               history at all — the capacity check and automatic scheduling — carry the day-one
               value. Personal history makes it sharper by Friday; it is not the price of entry.
             </Note>
+          </div>
+        )}
+
+        {phase === 'scheduled' && (
+          <div className="px-5 pb-4">
+            <StepHint
+              step={2}
+              action={
+                <Button size="sm" onClick={() => navigate('/timer')}>
+                  Open Timer
+                  <ArrowRight size={14} />
+                </Button>
+              }
+            >
+              The plan is on your calendar. Open <strong>Timer</strong> to watch it happen —
+              planned time on the right of each day, tracked time filling in on the left.
+            </StepHint>
           </div>
         )}
 
