@@ -511,21 +511,22 @@ export function ReasoningPage() {
                 Toggl already tells this persona the payoff is a better estimate, but they don’t
                 get it in the product in an elegant way. So the opportunity is not “add AI to
                 Track” — it is to connect the things the product keeps apart, and fill the gaps
-                where they exist:
+                where they exist.
               </p>
-              <div className="mt-3">
+              <p className="mt-4">
+                For an individual contributor,{' '}
+                <span className="text-hi">“do we have the capacity to take this on?”</span>{' '}
+                becomes: can I realistically commit to this work, and when can I actually do it?
+              </p>
+              <div className="mt-4">
                 <Flow
                   steps={[
                     { label: 'Time data' },
                     { label: 'Planning', built: true },
-                    { label: 'Decision', built: true },
+                    { label: 'Commitment', built: true },
                   ]}
                 />
               </div>
-              <p className="mt-4 font-display text-[15px] font-medium leading-relaxed text-hi">
-                For an individual contributor, “do we have the capacity to take this on?” becomes:
-                can I realistically commit to this work, and when can I actually do it?
-              </p>
             </Panel>
           </Section>
 
@@ -536,15 +537,17 @@ export function ReasoningPage() {
             tone="analysis"
             kicker="Product analysis"
             title="Toggl has the ingredients, but they are isolated and unfinished"
-            lede="I went through the product first: Timer in all four views — Calendar, Split View, Time Log, Timesheet, Analyze, Plan, the AI Copilot and more."
+            lede="I went through the product in detail: Timer in all four views — Calendar, Split View, Time Log, Timesheet, Analyze, Plan, the AI Copilot and more."
           >
             <Panel tone="analysis" eyebrow="What I actually found" filled>
               <p className="text-hi">The intelligence is fragmented, and it waits to be asked.</p>
               <p className="mt-2.5 text-[13.5px] leading-relaxed text-mid">
                 Split view already draws logged time on the left of each day and planned on the
                 right — a vocabulary for plan versus actual it has had for years. Copilot can
-                already answer a question about an estimate. What is missing is not a piece; it is
-                the user having to know it exists, ask it, then act on the answer somewhere else.
+                already answer a question like{' '}
+                <span className="text-hi">“How long do you think this will take?”</span> — but only
+                if you know to ask it. The AI answers; the calendar, the deadline and the decision
+                stay yours.
               </p>
             </Panel>
 
@@ -561,16 +564,6 @@ export function ReasoningPage() {
               </p>
             </Panel>
 
-            <Panel eyebrow="Today — Copilot">
-              <p className="font-display text-[14.5px] text-hi">
-                “How long do you think this will take?”
-              </p>
-              <p className="mt-2 text-[13px] leading-relaxed text-lo">
-                You have to know the question exists and ask it. The AI answers; the calendar, the
-                deadline and the decision stay yours.
-              </p>
-            </Panel>
-
             <Assertion>
               The opportunity was never to make the AI answer more questions. It was to stop
               requiring the question.
@@ -583,7 +576,7 @@ export function ReasoningPage() {
             index="05"
             tone="decision"
             kicker="Prioritization"
-            title="Feedback is not a roadmap"
+            title="Diverse signals, but a clear strategic direction"
             lede="The three inputs answer three different questions. Prioritization is the only place they are allowed to argue with each other."
           >
             <Grid cols={3}>
