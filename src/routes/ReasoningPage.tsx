@@ -537,7 +537,7 @@ export function ReasoningPage() {
             tone="analysis"
             kicker="Product analysis"
             title="Toggl is missing the sequence"
-            lede="I went through the product first: Timer in all four views — Calendar, Split View, Time Log, Timesheet — plus Analyze and Reports, Projects, Timeline, the AI Copilot, the planning fields, planned versus actual, alerts, tasks and projects."
+            lede="I went through the product first: Timer in all four views — Calendar, Split View, Time Log, Timesheet, Analyze, Plan, the AI Copilot and more."
           >
             <Panel tone="analysis" eyebrow="What I actually found" filled>
               <p className="text-hi">The intelligence is fragmented, and it waits to be asked.</p>
