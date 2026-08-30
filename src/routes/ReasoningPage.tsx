@@ -165,7 +165,7 @@ const CANDIDATES: Candidate[] = [
   {
     name: 'Goal updates',
     strategy: ['low', 'low', 'med'],
-    feedback: 'high',
+    feedback: 'med',
     effort: 'S',
     verdict: 'later',
   },
