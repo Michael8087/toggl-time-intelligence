@@ -34,7 +34,17 @@ import {
 } from '../lib/scheduler'
 import { DEMO_NOW, at, hoursBetween, iso, parse } from '../lib/time'
 
+/**
+ * Two ways to get from an estimate to time on the calendar.
+ *
+ * A — estimate, capacity and scheduling all happen in one sheet over the task.
+ * B — only the estimate happens on the task; scheduling moves to the Timer,
+ *     where Toggl already lets you plan time by hand.
+ */
+export type Variant = 'A' | 'B'
+
 interface State {
+  variant: Variant
   phase: Phase
   estimateMode: EstimateMode
   /** The number the user actually committed to, which may differ from the suggestion. */
@@ -73,12 +83,15 @@ type Action =
   | { type: 'openDrawer'; taskId: string }
   | { type: 'closeDrawer' }
   | { type: 'setTimeView'; view: State['timeView'] }
+  | { type: 'setVariant'; variant: Variant }
+  | { type: 'addSlot'; slot: PlannedSlot }
   | { type: 'raiseChange'; change: PlanChange }
   | { type: 'dismissChange' }
   | { type: 'applyChange'; slots: PlannedSlot[]; commitments: Commitment[] }
   | { type: 'reset' }
 
 const initialState: State = {
+  variant: 'A',
   phase: 'intake',
   estimateMode: 'newcomer',
   acceptedHours: null,
@@ -103,7 +116,15 @@ function reducer(state: State, action: Action): State {
     case 'setEstimateMode':
       return { ...state, estimateMode: action.mode }
     case 'acceptEstimate':
-      return { ...state, acceptedHours: action.hours, phase: 'capacity' }
+      return {
+        ...state,
+        acceptedHours: action.hours,
+        phase: state.variant === 'B' ? 'schedule' : 'capacity',
+      }
+    case 'setVariant':
+      return { ...initialState, variant: action.variant, showNotes: state.showNotes }
+    case 'addSlot':
+      return { ...state, slots: [...state.slots, action.slot] }
     case 'setSlots':
       return { ...state, slots: action.slots }
     case 'updateSlot':
@@ -156,7 +177,7 @@ function reducer(state: State, action: Action): State {
         activeChange: null,
       }
     case 'reset':
-      return { ...initialState, showNotes: state.showNotes }
+      return { ...initialState, variant: state.variant, showNotes: state.showNotes }
     default:
       return state
   }
@@ -183,6 +204,8 @@ interface DemoValue extends State {
   /** Progress through the story, 0–1, for the stepper. */
   stepIndex: number
 
+  setVariant: (v: Variant) => void
+  addSlot: (start: Date, hours: number) => void
   raiseChange: (change: PlanChange) => void
   dismissChange: () => void
   acceptChange: () => void
@@ -335,6 +358,17 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     stepIndex: PHASE_ORDER.indexOf(state.phase),
 
     commitments,
+    setVariant: (variant) => dispatch({ type: 'setVariant', variant }),
+    addSlot: (start, hours) =>
+      dispatch({
+        type: 'addSlot',
+        slot: {
+          id: `slot-manual-${start.getTime()}`,
+          taskId: HERO_TASK_ID,
+          start: iso(start),
+          end: iso(new Date(start.getTime() + hours * 3_600_000)),
+        },
+      }),
     raiseChange: (change) => dispatch({ type: 'raiseChange', change }),
     dismissChange: () => dispatch({ type: 'dismissChange' }),
     acceptChange,

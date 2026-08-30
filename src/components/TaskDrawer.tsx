@@ -43,6 +43,7 @@ import {
 } from '../lib/time'
 import { Button, Note, StepHint } from './ui'
 import { PlanSheet } from './PlanSheet'
+import { PlanInTimerHint } from './PlanInTimer'
 
 /* ---------------------------------------------------------------- property */
 
@@ -307,6 +308,7 @@ function TimeSection() {
   const navigate = useNavigate()
   const {
     closeDrawer,
+    variant,
     phase,
     planHours,
     acceptedHours,
@@ -409,6 +411,15 @@ function TimeSection() {
         </div>
       )}
 
+      {variant === 'B' && phase === 'schedule' && (
+        <PlanInTimerHint
+          onOpen={() => {
+            closeDrawer()
+            navigate('/timer')
+          }}
+        />
+      )}
+
       {planHours > 0 && slots.length > 0 && phase === 'scheduled' && (
         <>
           <p className="mt-3 text-[13px] leading-relaxed text-mid">
@@ -451,7 +462,8 @@ function TimeSection() {
 /* ------------------------------------------------------------------ drawer */
 
 export function TaskDrawer() {
-  const { drawerTaskId, closeDrawer, phase, acceptedHours, estimate, trackedHours } = useDemo()
+  const { drawerTaskId, closeDrawer, phase, acceptedHours, estimate, trackedHours, variant } =
+    useDemo()
   const [openSections, setOpenSections] = useState({
     subtasks: false,
     dependencies: true,
@@ -464,7 +476,10 @@ export function TaskDrawer() {
   if (!drawerTaskId) return null
   const task = HERO_TASK
   const project = PROJECTS.find((p) => p.id === task.projectId)!
-  const planning = phase === 'estimate' || phase === 'capacity' || phase === 'schedule'
+  // In B the sheet closes after the estimate; scheduling lives on the Timer.
+  const planning =
+    phase === 'estimate' ||
+    (variant === 'A' && (phase === 'capacity' || phase === 'schedule'))
 
   const status =
     phase === 'complete' || phase === 'reported'

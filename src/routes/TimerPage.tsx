@@ -21,6 +21,7 @@ import {
 } from 'lucide-react'
 import { CalendarLegend, WeekCalendar } from '../components/WeekCalendar'
 import { Button, Note, StepHint, TooltipCard } from '../components/ui'
+import { PlanInTimer, PlanTimePopover } from '../components/PlanInTimer'
 import {
   ChangeTrigger,
   PlanAdjustedNotice,
@@ -377,8 +378,11 @@ function SimBar() {
 }
 
 export function TimerPage() {
-  const { slots, entries, deadline, simNow, phase, commitments } = useDemo()
+  const { slots, entries, deadline, simNow, phase, commitments, variant, updateSlot } =
+    useDemo()
   const [split, setSplit] = useState(true)
+  const [planAt, setPlanAt] = useState<Date | null>(null)
+  const canPlanHere = variant === 'B' && phase === 'schedule'
   const days = weekDays(DEMO_NOW)
 
   /* The all-day band shows the tasks themselves across their scheduled dates.
@@ -411,6 +415,7 @@ export function TimerPage() {
       <DateRow split={split} onSplit={setSplit} />
       <SummaryRow />
       <SimBar />
+      <PlanInTimer />
       <ChangeTrigger />
       <PlanChangeNotice />
       <PlanAdjustedNotice />
@@ -425,8 +430,13 @@ export function TimerPage() {
           deadline={slots.length ? deadline : undefined}
           now={phase === 'working' || phase === 'complete' ? simNow : DEMO_NOW}
           mode={split ? 'split' : 'calendar'}
+          editable={canPlanHere}
+          onChangeSlot={canPlanHere ? updateSlot : undefined}
+          onPlanSlot={canPlanHere ? (start) => setPlanAt(start) : undefined}
         />
       </div>
+
+      {planAt && <PlanTimePopover start={planAt} onClose={() => setPlanAt(null)} />}
 
       <div className="space-y-4 border-t border-hairline px-5 py-4">
         <CalendarLegend />

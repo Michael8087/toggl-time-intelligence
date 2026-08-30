@@ -18,8 +18,11 @@ const STEPS = [
  * estimate, capacity and schedule are a single thought.
  */
 export function PlanSheet() {
-  const { phase, setPhase } = useDemo()
-  const current = STEPS.findIndex((s) => s.id === phase)
+  const { phase, setPhase, variant } = useDemo()
+  // B hands off to the Timer once the estimate is settled, so the sheet has
+  // one step and no capacity or schedule tabs.
+  const steps = variant === 'B' ? STEPS.slice(0, 1) : STEPS
+  const current = steps.findIndex((s) => s.id === phase)
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-8">
@@ -36,7 +39,7 @@ export function PlanSheet() {
           </div>
 
           <ol className="ml-auto hidden items-center gap-1 md:flex">
-            {STEPS.map((s, i) => {
+            {steps.map((s, i) => {
               const done = i < current
               const active = i === current
               return (
@@ -65,7 +68,7 @@ export function PlanSheet() {
                     </span>
                     {s.label}
                   </button>
-                  {i < STEPS.length - 1 && <span className="h-px w-4 bg-hairline-2" />}
+                  {i < steps.length - 1 && <span className="h-px w-4 bg-hairline-2" />}
                 </li>
               )
             })}

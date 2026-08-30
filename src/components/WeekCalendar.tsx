@@ -103,6 +103,8 @@ export interface WeekCalendarProps {
   onChangeSlot?: (slot: PlannedSlot) => void
   /** Height of the scrolling viewport over the 24-hour grid. */
   viewportHeight?: number
+  /** Clicking empty canvas offers to plan time there, as the real app does. */
+  onPlanSlot?: (start: Date) => void
   slotLabel?: string
   className?: string
 }
@@ -250,6 +252,7 @@ export function WeekCalendar({
   mode = 'split',
   dimPastDeadline = false,
   onChangeSlot,
+  onPlanSlot,
   viewportHeight = 520,
   slotLabel = 'Implement navigation component',
   className,
@@ -483,6 +486,22 @@ export function WeekCalendar({
               {showTasks ? 'Hide tasks' : 'Show tasks'}
             </span>
           </div>
+          {!showTasks && (
+            <div className="flex min-w-0 flex-1 py-2">
+              {days.map((d, i) => {
+                const n = placed.filter((x) => i >= x.from && i <= x.to).length
+                return (
+                  <div key={d.toISOString()} className="flex-1 text-center">
+                    {n > 0 && (
+                      <span className="rounded bg-e-blue/15 px-2 py-0.5 text-2xs font-medium text-e-blue">
+                        {n} task{n > 1 ? 's' : ''}
+                      </span>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )}
           {showTasks && (
           <div className="min-w-0 flex-1 space-y-1 py-2 pr-1">
             {lanes.map((lane, li) => (
@@ -547,8 +566,18 @@ export function WeekCalendar({
                 key={day.toISOString()}
                 onMouseEnter={() => setHoverDay(di)}
                 onMouseLeave={() => setHoverDay((v) => (v === di ? null : v))}
+                onClick={(ev) => {
+                  if (!onPlanSlot) return
+                  const box = ev.currentTarget.getBoundingClientRect()
+                  const hour = VIEW_START + (ev.clientY - box.top) / HOUR_H
+                  const snapped = Math.round((hour * 60) / SNAP_MIN) * SNAP_MIN
+                  const start = new Date(day)
+                  start.setHours(0, snapped, 0, 0)
+                  onPlanSlot(start)
+                }}
                 className={clsx(
                   'relative flex-1 border-l border-hairline',
+                  onPlanSlot && 'cursor-copy',
                   past && dimPastDeadline && 'bg-surface/60',
                 )}
               >
@@ -599,7 +628,8 @@ export function WeekCalendar({
                     return (
                       <div
                         key={c.id}
-                        onClick={(ev) =>
+                        onClick={(ev) => {
+                          ev.stopPropagation()
                           setDetail({
                             kind: 'Planned',
                             title: c.title,
@@ -610,7 +640,7 @@ export function WeekCalendar({
                             end: e,
                             rect: ev.currentTarget.getBoundingClientRect(),
                           })
-                        }
+                        }}
                         className={clsx(
                           'cursor-pointer',
                           'entry-planned absolute overflow-hidden rounded px-1.5 py-1',
@@ -646,6 +676,7 @@ export function WeekCalendar({
                     <div
                       key={slot.id}
                       onPointerDown={(e) => beginDrag(e, slot, 'move')}
+                      onClick={(e) => e.stopPropagation()}
                       className={clsx(
                         'entry-planned absolute overflow-hidden rounded border-2 border-pink px-1.5 py-1',
                         plannedZ,
@@ -685,7 +716,8 @@ export function WeekCalendar({
                     return (
                       <div
                         key={e.id}
-                        onClick={(ev) =>
+                        onClick={(ev) => {
+                          ev.stopPropagation()
                           setDetail({
                             kind: 'Logged',
                             title: e.activity,
@@ -696,7 +728,7 @@ export function WeekCalendar({
                             end: en,
                             rect: ev.currentTarget.getBoundingClientRect(),
                           })
-                        }
+                        }}
                         className={clsx(
                           'entry-logged animate-fade-in absolute z-10 cursor-pointer overflow-hidden rounded px-1.5 py-1',
                           FILL['skoda-infotainment'],

@@ -251,7 +251,7 @@ function Sidebar() {
 
 /** Sits above the content: the case-study controls, kept out of the product chrome. */
 function DemoBar() {
-  const { showNotes, toggleNotes, reset } = useDemo()
+  const { showNotes, toggleNotes, reset, variant, setVariant } = useDemo()
 
   return (
     <div className="flex h-9 shrink-0 items-center gap-2 border-b border-hairline bg-surface px-4">
@@ -263,6 +263,27 @@ function DemoBar() {
         Toggl 2.0 · time intelligence for individual contractors
       </span>
       <div className="ml-auto flex items-center gap-1.5">
+        {/* Two routes from estimate to calendar; switching restarts the run. */}
+        <span className="flex items-center rounded-pill bg-panel-2 p-0.5 ring-1 ring-hairline">
+          {(
+            [
+              ['A', 'Plan on the task'],
+              ['B', 'Plan on the calendar'],
+            ] as const
+          ).map(([v, label]) => (
+            <button
+              key={v}
+              onClick={() => setVariant(v)}
+              title={`Variant ${v} — ${label}`}
+              className={clsx(
+                'rounded-pill px-2 py-0.5 font-display text-[11px] font-semibold transition-colors',
+                variant === v ? 'bg-pink text-white' : 'text-mid hover:text-hi',
+              )}
+            >
+              {v}
+            </button>
+          ))}
+        </span>
         <Link
           to="/reasoning"
           className="inline-flex h-6 items-center gap-1.5 rounded-pill border border-hairline-2 px-2.5 font-display text-[11px] font-semibold text-mid transition-colors hover:border-lo hover:text-hi"
