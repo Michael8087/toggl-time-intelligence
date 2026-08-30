@@ -30,7 +30,6 @@ const CONTENTS: { id: string; label: string; tone: keyof typeof TONE }[] = [
   { id: 'hypothesis', label: 'The bet', tone: 'decision' },
   { id: 'loops', label: 'The two loops', tone: 'strategy' },
   { id: 'measure', label: 'Metrics & risks', tone: 'neutral' },
-  { id: 'thesis', label: 'Thesis', tone: 'neutral' },
   { id: 'sources', label: 'Sources', tone: 'neutral' },
 ]
 
@@ -332,21 +331,6 @@ export function ReasoningPage() {
               </li>
             ))}
           </ul>
-          <div className="mt-6 space-y-1.5 border-t border-hairline pt-4">
-            {(
-              [
-                ['evidence', 'What users said'],
-                ['strategy', 'What Toggl said'],
-                ['analysis', 'What I found'],
-                ['decision', 'What I decided'],
-              ] as const
-            ).map(([tone, label]) => (
-              <div key={tone} className="flex items-center gap-2 text-2xs text-lo">
-                <span className={clsx('h-1.5 w-1.5 rounded-full', TONE[tone].dot)} />
-                {label}
-              </div>
-            ))}
-          </div>
         </nav>
 
         {/* Content */}
@@ -454,9 +438,7 @@ export function ReasoningPage() {
               <p>
                 Most of this is people defending a habit that changed under them — that’s feedback
                 for change management, not a request for a new feature. There’s also real feedback
-                on pricing and packaging, and a scatter of smaller gaps. The one group looking
-                forward rather than back is Goals — people asking Toggl to help them plan, not
-                only record.
+                on pricing and packaging, and a scatter of other gaps.
               </p>
               <p className="mt-2.5">
                 None of this is exhaustive, though: feedback like this mostly reflects what people
@@ -481,9 +463,9 @@ export function ReasoningPage() {
               do with them.”
             </Quote>
 
-            <div>
+            <div className="text-center">
               <div className="eyebrow text-pink">The shift, in Toggl’s framing</div>
-              <div className="mt-2.5 flex flex-wrap items-center gap-2">
+              <div className="mt-2.5 flex flex-wrap items-center justify-center gap-2">
                 <span className="rounded-lg bg-panel-2 px-3 py-1.5 font-display text-[13px] font-semibold text-mid">
                   “where did our time go?”
                 </span>
@@ -495,7 +477,7 @@ export function ReasoningPage() {
             </div>
 
             <div>
-              <div className="eyebrow text-lo">The questions it names</div>
+              <div className="eyebrow text-lo">The questions that arise</div>
               <div className="mt-2.5">
                 <Bullets
                   tone="strategy"
@@ -512,7 +494,7 @@ export function ReasoningPage() {
               </p>
             </div>
 
-            <Panel tone="strategy" eyebrow="The Focus / 2.0 page, same direction" filled>
+            <Panel tone="strategy" eyebrow="From the IC's Perspective" filled>
               <p>
                 Its headline is already the whole thesis —{' '}
                 <a
@@ -922,50 +904,8 @@ export function ReasoningPage() {
             />
           </Section>
 
-          {/* 09 — Thesis */}
-          <Section id="thesis" index="09" kicker="Thesis" title="The bet, in four lines">
-            <div className="rounded-xl border border-hairline bg-panel p-6">
-              <p className="font-display text-[16.5px] leading-[1.5] text-mid">
-                Toggl has spent years building a trusted record of what happened to our time.
-              </p>
-              <p className="mt-3 font-display text-[16.5px] leading-[1.5] text-mid">
-                Toggl 2.0 is about turning that record into better decisions.
-              </p>
-              <p className="mt-3 font-display text-[16.5px] leading-[1.5] text-mid">
-                For an individual contributor, one of the most important is:{' '}
-                <span className="font-semibold text-hi">“Can I realistically commit to this?”</span>
-              </p>
-              <p className="mt-3 font-display text-[16.5px] font-semibold leading-[1.5] text-hi">
-                The concept makes Toggl answer that proactively — and keep the answer honest as the
-                work changes.
-              </p>
-            </div>
-
-            <Panel tone="decision" eyebrow="Why this one" filled>
-              <p className="font-display text-[15px] leading-relaxed text-hi">
-                I did not choose this because it was the most requested feature. It was not
-                requested at all.
-              </p>
-              <p className="mt-2">
-                I chose it because it is the only candidate at the intersection of all four
-                constraints the brief imposes: a real IC need, value inside week zero, Toggl’s
-                stated direction, and the data advantage nobody else in the category has.
-              </p>
-            </Panel>
-
-            <div className="pt-1">
-              <Link
-                to="/tasks"
-                className="inline-flex h-10 items-center gap-2 rounded-pill bg-pink px-5 font-display text-[13.5px] font-semibold text-white transition-colors hover:bg-pink-hi"
-              >
-                See it working
-                <ArrowUpRight size={15} />
-              </Link>
-            </div>
-          </Section>
-
-          {/* 10 — Sources */}
-          <Section id="sources" index="10" kicker="Sources" title="What this is built on">
+          {/* 09 — Sources */}
+          <Section id="sources" index="09" kicker="Sources" title="What this is built on">
             <div className="divide-y divide-hairline rounded-xl border border-hairline bg-panel">
               {(
                 [
@@ -1028,6 +968,22 @@ export function ReasoningPage() {
                     </div>
                     <p className="mt-0.5 text-[13.5px] leading-relaxed text-mid">{note}</p>
                   </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex flex-wrap gap-x-5 gap-y-2 border-t border-hairline pt-4">
+              {(
+                [
+                  ['evidence', 'What users said'],
+                  ['strategy', 'What Toggl said'],
+                  ['analysis', 'What I found'],
+                  ['decision', 'What I decided'],
+                ] as const
+              ).map(([tone, label]) => (
+                <div key={tone} className="flex items-center gap-2 text-2xs text-lo">
+                  <span className={clsx('h-1.5 w-1.5 rounded-full', TONE[tone].dot)} />
+                  {label}
                 </div>
               ))}
             </div>
