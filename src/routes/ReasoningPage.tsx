@@ -159,7 +159,7 @@ const CANDIDATES: Candidate[] = [
     name: 'Adaptive replanning',
     strategy: ['high', 'med', 'high'],
     feedback: 'low',
-    effort: 'L',
+    effort: 'M',
     verdict: 'build',
   },
   {
