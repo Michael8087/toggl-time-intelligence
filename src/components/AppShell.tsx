@@ -270,12 +270,12 @@ function DemoBar() {
             [
               [
                 'A',
-                'Compact',
+                'Version A - Compact',
                 'Estimate, capacity and scheduling in one sheet on the task.',
               ],
               [
                 'B',
-                'In place',
+                'Version B - Discrete',
                 'Estimate on the task; scheduling on the calendar, where planning already lives.',
               ],
             ] as const
@@ -286,13 +286,12 @@ function DemoBar() {
                 setVariant(v)
                 navigate('/tasks')
               }}
-              title={`Variant ${v} · ${name} — ${description}`}
+              title={`${name} — ${description}`}
               className={clsx(
                 'inline-flex items-center gap-1.5 rounded-pill px-2.5 py-0.5 font-display text-[11px] font-semibold transition-colors',
                 variant === v ? 'bg-pink text-white' : 'text-mid hover:text-hi',
               )}
             >
-              <span className={clsx(variant === v ? 'text-white/70' : 'text-lo')}>{v}</span>
               {name}
             </button>
           ))}
