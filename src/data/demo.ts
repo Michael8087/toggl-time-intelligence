@@ -1,4 +1,4 @@
-import type { Commitment, Project, Task, TimeEntry } from '../types'
+import type { Commitment, PlanChange, Project, Task, TimeEntry } from '../types'
 import { at, iso } from '../lib/time'
 
 /**
@@ -64,37 +64,9 @@ export const HERO_TASK: Task = {
     'Build the new navigation component for the infotainment frontend. Integrate the navigation states with the existing UI and ensure the component works with the current routing implementation.',
   projectId: HERO_PROJECT_ID,
   status: 'unplanned',
-  dueAt: iso(at(2, 17)), // Wednesday 17:00 — set by the downstream integration test slot
+  dueAt: iso(at(2, 17)), // Wednesday 17:00, set by the client
   assignee: USER.name,
   tags: ['Component', 'Frontend'],
-  dependencies: [
-    {
-      id: 'INF-236',
-      title: 'Finalise navigation API',
-      direction: 'upstream',
-      state: 'in_progress',
-      owner: 'Marek Dvořák',
-      clearsAt: iso(at(0, 12)),
-      note: 'Contract review is on your calendar this morning. Expected to land at 12:00.',
-    },
-    {
-      id: 'INF-231',
-      title: 'Navigation component design',
-      direction: 'upstream',
-      state: 'done',
-      owner: 'Lucie Horáková',
-      note: 'Figma handoff complete. Navigation states and transitions specified.',
-    },
-    {
-      id: 'INF-244',
-      title: 'Integration testing',
-      direction: 'downstream',
-      state: 'waiting',
-      owner: 'QA — Škoda',
-      clearsAt: iso(at(3, 9)),
-      note: 'Booked for Thursday 09:00. This is what sets your Wednesday deadline.',
-    },
-  ],
 }
 
 /** Completed work in the same project — the raw material for estimates. */
@@ -342,3 +314,53 @@ export const projectById = (id: string) => PROJECTS.find((p) => p.id === id)
 
 /** Comparable work the estimator leans on — same shape of task, similar scope. */
 export const COMPARABLES = ['INF-198', 'INF-215', 'INF-224']
+
+
+/**
+ * Ways the plan can stop being realistic.
+ *
+ * None of these require the user to have declared anything up front. Each is a
+ * signal Toggl can already observe: its own tracked time, the calendar it is
+ * connected to, and edits to the task itself. "Falling behind" is only one of
+ * them, and deliberately not the first.
+ */
+export const PLAN_CHANGES: PlanChange[] = [
+  {
+    id: 'new-commitment',
+    option: 'A meeting lands on your calendar',
+    signal: 'A new meeting was added to tomorrow',
+    detail:
+      'Škoda booked “Infotainment design review” for Tuesday 14:00–15:00. It lands inside the block you had set aside for this task.',
+    evidence: ['Calendar · added 4 minutes ago', 'Overlaps Tue 11:00–17:00'],
+    impact:
+      'Tuesday drops from 6h to 5h, so only 9h of the 10h you committed to still fits before Wednesday 17:00.',
+    suggestion:
+      'Split Tuesday around the meeting and move the last hour to Wednesday morning, where you still have 2h free.',
+  },
+  {
+    id: 'slower-than-planned',
+    option: 'The work runs longer than estimated',
+    signal: 'This is taking longer than the estimate assumed',
+    detail:
+      'You have tracked {tracked} and the component still has its routing edge cases and test pass outstanding. Comparable work reached this point in about two thirds of the time.',
+    evidence: ['{tracked} tracked of {estimate}', 'Projected 12h at current pace'],
+    impact:
+      'The projection is now 12h rather than 10h — 2h more than you have scheduled, and exactly the buffer you had left.',
+    suggestion:
+      'Take the last 2h of free time before the deadline, Wednesday 09:00–11:00. Nothing else on your week moves.',
+    revisedEstimate: 12,
+  },
+  {
+    id: 'scope-added',
+    option: 'The task grows',
+    signal: 'The task description changed',
+    detail:
+      'A line was added this morning: “also handle deep-link entry points”. That is a second routing surface, not a detail of the first.',
+    evidence: ['Task edited 09:20 by Marek Dvořák', 'Re-estimated 11–14h'],
+    impact:
+      'Re-estimated at 12h. Your 10h plan no longer covers the task, and 12h is the whole of your remaining capacity — there is no slack left.',
+    suggestion:
+      'Add Wednesday 09:00–11:00 to cover it, and tell the client now that the added scope uses the entire buffer.',
+    revisedEstimate: 12,
+  },
+]

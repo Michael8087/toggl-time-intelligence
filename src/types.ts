@@ -4,20 +4,6 @@ export type TaskStatus =
   | 'in_progress'
   | 'done'
 
-export type DependencyState = 'done' | 'in_progress' | 'blocked' | 'waiting'
-
-export interface Dependency {
-  id: string
-  title: string
-  /** 'upstream' must finish before this task; 'downstream' waits on this task. */
-  direction: 'upstream' | 'downstream'
-  state: DependencyState
-  owner: string
-  /** Upstream: when it is expected to clear. Downstream: when it is due to start. */
-  clearsAt?: string // ISO
-  note?: string
-}
-
 export interface Task {
   id: string
   ref: string // e.g. INF-241
@@ -32,7 +18,6 @@ export interface Task {
   dueAt?: string // ISO
   assignee: string
   tags: string[]
-  dependencies?: Dependency[]
   /** Completed reference work used to build estimates. */
   history?: { estimateHours: number; actualHours: number; completedAt: string }
 }
@@ -77,6 +62,29 @@ export interface TimeEntry {
   /** What the automatic tracker inferred the user was doing. */
   activity: string
   source: 'auto' | 'manual'
+}
+
+/**
+ * A detected divergence between the plan and reality.
+ *
+ * Deliberately not a dependency graph: every trigger here is something Toggl
+ * can observe on its own — tracked pace, a calendar that moved, a task that was
+ * edited — rather than a relationship the user had to declare up front.
+ */
+export interface PlanChange {
+  id: string
+  /** Short name for the control that triggers it in the demo. */
+  option: string
+  /** What Toggl noticed. */
+  signal: string
+  detail: string
+  evidence: string[]
+  /** What it means for the current plan. */
+  impact: string
+  /** The proposed fix, in plain language. */
+  suggestion: string
+  /** Hours the estimate becomes, if the change revises it. */
+  revisedEstimate?: number
 }
 
 export interface EstimateFactor {

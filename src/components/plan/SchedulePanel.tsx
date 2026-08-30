@@ -3,7 +3,7 @@ import { AlertTriangle, CheckCircle2, Hand, RefreshCw } from 'lucide-react'
 import { Button, Note } from '../ui'
 import { CalendarLegend, WeekCalendar } from '../WeekCalendar'
 import { useDemo } from '../../state/DemoContext'
-import { COMMITMENTS } from '../../data/demo'
+
 import {
   DEMO_NOW,
   formatDayLong,
@@ -24,6 +24,7 @@ export function SchedulePanel() {
     updateSlot,
     generateSchedule,
     confirmSchedule,
+    commitments,
   } = useDemo()
   const days = weekDays(DEMO_NOW)
   const edited = !check.ok
@@ -114,7 +115,7 @@ export function SchedulePanel() {
           <div className="mb-4 overflow-hidden rounded-xl border border-hairline">
             <WeekCalendar
               days={days}
-              commitments={COMMITMENTS}
+              commitments={commitments}
               windows={windows}
               slots={slots}
               editable

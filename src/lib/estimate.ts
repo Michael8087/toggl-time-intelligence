@@ -85,12 +85,12 @@ export function buildEstimate(_task: Task, mode: EstimateMode = 'newcomer'): Est
           evidence: ['“Integrate the navigation states”', '“current routing implementation”'],
         },
         {
-          id: 'dependency',
-          label: 'Open upstream dependency',
+          id: 'ramp',
+          label: 'Your first task here',
           hours: 1,
           detail:
-            'The navigation API is not final. On this project, components started against an unfinished contract have needed roughly an hour of rework.',
-          evidence: ['“Finalise navigation API” still open, expected 12:00 today'],
+            'First tasks on an unfamiliar codebase run about an hour longer than later ones, across the workspace. This drops away once you have finished one.',
+          evidence: ['No prior tasks in this project'],
         },
       ],
       sources: [
@@ -99,7 +99,7 @@ export function buildEstimate(_task: Task, mode: EstimateMode = 'newcomer'): Est
         { label: 'Task scope', weight: 20, note: 'Scope signals read from the description' },
       ],
       caveat:
-        'No personal signal yet — which is exactly why the range is 7–15h rather than a confident single number. One finished task closes most of that gap; by your third the range is roughly half as wide.',
+        'No personal signal yet — which is exactly why the range is 7–15h rather than a confident single number. One finished task closes most of that gap; by your third the range is roughly half as wide. Toggl will also keep watching this plan after you commit to it, and say so if it stops being realistic.',
     }
   }
 
@@ -128,12 +128,12 @@ export function buildEstimate(_task: Task, mode: EstimateMode = 'newcomer'): Est
         evidence: ['“Integrate the navigation states”', '“current routing implementation”'],
       },
       {
-        id: 'dependency',
-        label: 'Open upstream dependency',
+        id: 'integration',
+        label: 'Routing integration',
         hours: 1,
         detail:
-          'The navigation API is not final. Components started against an unfinished contract have needed roughly an hour of rework.',
-        evidence: ['“Finalise navigation API” still open, expected 12:00 today'],
+          'Components that touch the router have run about an hour longer than standalone ones on this project.',
+        evidence: ['Observed across 4 components'],
       },
       {
         id: 'velocity',

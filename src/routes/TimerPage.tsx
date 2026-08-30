@@ -22,8 +22,13 @@ import {
 } from 'lucide-react'
 import { CalendarLegend, WeekCalendar } from '../components/WeekCalendar'
 import { Button, Note, TooltipCard } from '../components/ui'
+import {
+  ChangeTrigger,
+  PlanAdjustedNotice,
+  PlanChangeNotice,
+} from '../components/PlanChangeNotice'
 import { useDemo } from '../state/DemoContext'
-import { COMMITMENTS, HERO_TASK, OTHER_TASKS, PROJECTS, SIMULATED_ENTRIES } from '../data/demo'
+import { HERO_TASK, OTHER_TASKS, PROJECTS, SIMULATED_ENTRIES } from '../data/demo'
 import {
   DEMO_NOW,
   formatClock,
@@ -244,7 +249,7 @@ function StackedBar({ segments, width }: { segments: Segment[]; width: number })
 }
 
 function SummaryRow() {
-  const { trackedHours, slots } = useDemo()
+  const { trackedHours, slots, commitments } = useDemo()
 
   const hoursOf = (list: { start: string; end: string }[]) =>
     list.reduce((s, x) => s + hoursBetween(parse(x.start), parse(x.end)), 0)
@@ -265,7 +270,7 @@ function SummaryRow() {
     label: p.name,
     cls: PROJECT_FILL[p.id],
     hours:
-      hoursOf(COMMITMENTS.filter((c) => c.projectId === p.id)) +
+      hoursOf(commitments.filter((c) => c.projectId === p.id)) +
       (p.id === 'skoda-infotainment' ? hoursOf(slots) : 0),
   })).filter((seg) => seg.hours > 0)
 
@@ -369,7 +374,7 @@ function SimBar() {
 }
 
 export function TimerPage() {
-  const { slots, entries, deadline, simNow, phase } = useDemo()
+  const { slots, entries, deadline, simNow, phase, commitments } = useDemo()
   const [split, setSplit] = useState(true)
   const days = weekDays(DEMO_NOW)
 
@@ -403,11 +408,14 @@ export function TimerPage() {
       <DateRow split={split} onSplit={setSplit} />
       <SummaryRow />
       <SimBar />
+      <ChangeTrigger />
+      <PlanChangeNotice />
+      <PlanAdjustedNotice />
 
       <div className="min-h-0 flex-1">
         <WeekCalendar
           days={days}
-          commitments={COMMITMENTS}
+          commitments={commitments}
           taskBars={taskBars}
           slots={slots}
           entries={entries}

@@ -1,9 +1,9 @@
 import clsx from 'clsx'
-import { AlertTriangle, ArrowRight, CheckCircle2, CircleDot, Lock } from 'lucide-react'
+import { AlertTriangle, ArrowRight, CalendarClock, CheckCircle2, Eye, Lock } from 'lucide-react'
 import { Button, Note } from '../ui'
 import { CalendarLegend, WeekCalendar } from '../WeekCalendar'
 import { useDemo } from '../../state/DemoContext'
-import { COMMITMENTS, HERO_TASK } from '../../data/demo'
+
 import {
   DEMO_NOW,
   formatDate,
@@ -18,8 +18,16 @@ import {
 } from '../../lib/time'
 
 export function CapacityPanel() {
-  const { planHours, windows, availableHours, earliestStart, deadline, generateSchedule, estimate } =
-    useDemo()
+  const {
+    planHours,
+    windows,
+    availableHours,
+    earliestStart,
+    deadline,
+    generateSchedule,
+    estimate,
+    commitments,
+  } = useDemo()
   const days = weekDays(DEMO_NOW)
   const fits = availableHours >= planHours
   const buffer = availableHours - planHours
@@ -29,9 +37,15 @@ export function CapacityPanel() {
   const worstFits = availableHours >= worstCase
   const worstShort = worstCase - availableHours
 
-  const upstream = HERO_TASK.dependencies!.find(
-    (d) => d.direction === 'upstream' && d.state !== 'done',
-  )!
+  // What the calendar has already claimed inside the usable window.
+  const committedHours = commitments.reduce((sum, c) => {
+    const start = parse(c.start)
+    const end = parse(c.end)
+    if (end <= earliestStart || start >= deadline) return sum
+    const from = start > earliestStart ? start : earliestStart
+    const to = end < deadline ? end : deadline
+    return sum + Math.max(0, hoursBetween(from, to))
+  }, 0)
 
   const byDay = days
     .map((d) => ({ day: d, wins: windows.filter((w) => sameDay(w.start, d)) }))
@@ -122,31 +136,33 @@ export function CapacityPanel() {
 
           {/* Constraints */}
           <div className="mb-6 rounded-xl border border-hairline bg-surface px-4 py-3.5">
-            <div className="eyebrow mb-2.5">What constrains when this can start</div>
+            <div className="eyebrow mb-2.5">What shapes when this can happen</div>
             <ul className="space-y-2.5">
               <li className="flex gap-2.5">
-                <CircleDot size={15} className="mt-0.5 shrink-0 text-warn" />
-                <div className="min-w-0 text-[13px] leading-relaxed">
+                <CalendarClock size={15} className="mt-0.5 shrink-0 text-mid" />
+                <div className="min-w-0 text-[13px] leading-relaxed text-mid">
+                  Your calendar already holds{' '}
                   <span className="font-display font-semibold text-hi">
-                    {upstream.title}
+                    {formatDuration(committedHours)} of meetings and other client work
                   </span>{' '}
-                  <span className="text-mid">
-                    is still open with {upstream.owner}. Expected to land at{' '}
-                    {formatTime(parse(upstream.clearsAt!))} today — so nothing is scheduled
-                    before then.
-                  </span>
+                  between now and the deadline. Only what is left over is offered.
                 </div>
               </li>
               <li className="flex gap-2.5">
                 <Lock size={15} className="mt-0.5 shrink-0 text-bad" />
-                <div className="min-w-0 text-[13px] leading-relaxed">
+                <div className="min-w-0 text-[13px] leading-relaxed text-mid">
+                  The task is due{' '}
                   <span className="font-display font-semibold text-hi">
-                    Integration testing
-                  </span>{' '}
-                  <span className="text-mid">
-                    is booked for Thursday 09:00. That is what sets the {formatDayLong(deadline)}{' '}
-                    {formatTime(deadline)} deadline — not an arbitrary date.
+                    {formatDayLong(deadline)} {formatTime(deadline)}
                   </span>
+                  , so nothing is scheduled past it.
+                </div>
+              </li>
+              <li className="flex gap-2.5">
+                <Eye size={15} className="mt-0.5 shrink-0 text-mid" />
+                <div className="min-w-0 text-[13px] leading-relaxed text-mid">
+                  None of this is fixed. Toggl keeps watching the plan after you commit to it,
+                  and says so if any of these change.
                 </div>
               </li>
             </ul>
@@ -164,7 +180,7 @@ export function CapacityPanel() {
             <ul className="divide-y divide-hairline rounded-xl border border-hairline">
               {byDay.map(({ day, wins }) => {
                 const total = wins.reduce((s, w) => s + hoursBetween(w.start, w.end), 0)
-                const busy = COMMITMENTS.filter((c) => sameDay(parse(c.start), day))
+                const busy = commitments.filter((c) => sameDay(parse(c.start), day))
                 return (
                   <li key={day.toISOString()} className="flex gap-4 px-4 py-3">
                     <div className="w-[104px] shrink-0">
@@ -203,7 +219,7 @@ export function CapacityPanel() {
           <div className="mb-4 overflow-hidden rounded-xl border border-hairline">
             <WeekCalendar
               days={days}
-              commitments={COMMITMENTS}
+              commitments={commitments}
               windows={windows}
               deadline={deadline}
               now={DEMO_NOW}

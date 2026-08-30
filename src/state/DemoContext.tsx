@@ -8,7 +8,15 @@ import {
   useRef,
   type ReactNode,
 } from 'react'
-import type { EstimateModel, Interval, Phase, PlannedSlot, TimeEntry } from '../types'
+import type {
+  Commitment,
+  EstimateModel,
+  Interval,
+  Phase,
+  PlanChange,
+  PlannedSlot,
+  TimeEntry,
+} from '../types'
 import {
   COMMITMENTS,
   HERO_TASK,
@@ -24,7 +32,7 @@ import {
   validateSchedule,
   type ScheduleCheck,
 } from '../lib/scheduler'
-import { DEMO_NOW, hoursBetween, parse } from '../lib/time'
+import { DEMO_NOW, at, hoursBetween, iso, parse } from '../lib/time'
 
 export type ThemePref = 'auto' | 'light' | 'dark'
 
@@ -43,6 +51,12 @@ interface State {
   drawerTaskId: string | null
   /** Which sub-view of the drawer's Time section is open. */
   timeView: 'summary' | 'planned' | 'logged'
+  /** A detected divergence awaiting the user's decision. */
+  activeChange: PlanChange | null
+  /** Changes the user has already accepted. */
+  appliedChanges: string[]
+  /** Commitments added by an accepted change — the calendar is not static. */
+  extraCommitments: Commitment[]
 }
 
 type Action =
@@ -63,6 +77,9 @@ type Action =
   | { type: 'openDrawer'; taskId: string }
   | { type: 'closeDrawer' }
   | { type: 'setTimeView'; view: State['timeView'] }
+  | { type: 'raiseChange'; change: PlanChange }
+  | { type: 'dismissChange' }
+  | { type: 'applyChange'; slots: PlannedSlot[]; commitments: Commitment[] }
   | { type: 'reset' }
 
 const initialState: State = {
@@ -76,6 +93,9 @@ const initialState: State = {
   theme: 'auto',
   drawerTaskId: null,
   timeView: 'summary',
+  activeChange: null,
+  appliedChanges: [],
+  extraCommitments: [],
 }
 
 /** Pause the simulation here — mid-Tuesday, 6h 20m tracked against a 10h plan. */
@@ -127,6 +147,21 @@ function reducer(state: State, action: Action): State {
       return { ...state, drawerTaskId: null }
     case 'setTimeView':
       return { ...state, timeView: action.view }
+    case 'raiseChange':
+      return { ...state, activeChange: action.change }
+    case 'dismissChange':
+      return { ...state, activeChange: null }
+    case 'applyChange':
+      return {
+        ...state,
+        slots: action.slots,
+        extraCommitments: action.commitments,
+        acceptedHours: state.activeChange?.revisedEstimate ?? state.acceptedHours,
+        appliedChanges: state.activeChange
+          ? [...state.appliedChanges, state.activeChange.id]
+          : state.appliedChanges,
+        activeChange: null,
+      }
     case 'reset':
       return { ...initialState, showNotes: state.showNotes, theme: state.theme }
     default:
@@ -146,6 +181,8 @@ interface DemoValue extends State {
   check: ScheduleCheck
   entries: TimeEntry[]
   trackedHours: number
+  /** Every commitment currently on the calendar, including added ones. */
+  commitments: Commitment[]
   /** Where the simulated clock has reached. */
   simNow: Date
   atCheckpoint: boolean
@@ -155,6 +192,9 @@ interface DemoValue extends State {
   /** What `theme: 'auto'` currently resolves to. */
   resolvedTheme: 'light' | 'dark'
 
+  raiseChange: (change: PlanChange) => void
+  dismissChange: () => void
+  acceptChange: () => void
   setTheme: (t: ThemePref) => void
   openDrawer: (taskId: string) => void
   closeDrawer: () => void
@@ -199,19 +239,17 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   )
   const planHours = state.acceptedHours ?? estimate.bestHours
 
-  const earliestStart = useMemo(
-    () =>
-      earliestStartFor(
-        HERO_TASK.dependencies?.find((d) => d.direction === 'upstream' && d.state !== 'done')
-          ?.clearsAt,
-      ),
-    [],
-  )
+  const earliestStart = useMemo(() => earliestStartFor(), [])
   const deadline = useMemo(() => parse(HERO_TASK.dueAt!), [])
 
+  const commitments = useMemo(
+    () => [...COMMITMENTS, ...state.extraCommitments],
+    [state.extraCommitments],
+  )
+
   const availabilityInput = useMemo(
-    () => ({ commitments: COMMITMENTS, earliestStart, deadline }),
-    [earliestStart, deadline],
+    () => ({ commitments, earliestStart, deadline }),
+    [commitments, earliestStart, deadline],
   )
 
   const windows = useMemo(() => availableWindows(availabilityInput), [availabilityInput])
@@ -259,6 +297,46 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     document.documentElement.classList.toggle('dark', resolvedTheme === 'dark')
   }, [resolvedTheme])
 
+  /**
+   * Apply the accepted adjustment. Each change knows what it does to the
+   * calendar; the schedule is then re-derived from whatever capacity is left,
+   * so the result is always something the scheduler would have produced itself.
+   */
+  const acceptChange = useCallback(() => {
+    const change = state.activeChange
+    if (!change) return
+
+    const nextCommitments = [...state.extraCommitments]
+    if (change.id === 'new-commitment') {
+      nextCommitments.push({
+        id: 'added-1',
+        title: 'Infotainment design review',
+        start: iso(at(1, 14)),
+        end: iso(at(1, 15)),
+        kind: 'meeting',
+        projectId: HERO_TASK.projectId,
+      })
+    }
+
+    const hours = change.revisedEstimate ?? planHours
+    const merged = [...COMMITMENTS, ...nextCommitments]
+    // Time already tracked stays put; only the remainder is re-planned.
+    const fresh = availableWindows({
+      commitments: merged,
+      earliestStart: simNow,
+      deadline,
+    })
+    const keep = state.slots.filter((s) => parse(s.end) <= simNow)
+    const done = keep.reduce((sum, s) => sum + hoursBetween(parse(s.start), parse(s.end)), 0)
+    const rescheduled = autoSchedule(fresh, Math.max(0, hours - done), HERO_TASK_ID)
+
+    dispatch({
+      type: 'applyChange',
+      slots: [...keep, ...rescheduled.map((s, i) => ({ ...s, id: `slot-adj-${i}` }))],
+      commitments: nextCommitments,
+    })
+  }, [state.activeChange, state.extraCommitments, state.slots, planHours, deadline])
+
   const generateSchedule = useCallback(() => {
     dispatch({ type: 'setSlots', slots: autoSchedule(windows, planHours, HERO_TASK_ID) })
     dispatch({ type: 'setPhase', phase: 'schedule' })
@@ -281,6 +359,10 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     stepIndex: PHASE_ORDER.indexOf(state.phase),
     resolvedTheme,
 
+    commitments,
+    raiseChange: (change) => dispatch({ type: 'raiseChange', change }),
+    dismissChange: () => dispatch({ type: 'dismissChange' }),
+    acceptChange,
     setTheme: (theme) => dispatch({ type: 'setTheme', theme }),
     openDrawer: (taskId) => dispatch({ type: 'openDrawer', taskId }),
     closeDrawer: () => dispatch({ type: 'closeDrawer' }),

@@ -18,7 +18,7 @@ const MAX_BLOCK_HOURS = 6
 
 export interface AvailabilityInput {
   commitments: Commitment[]
-  /** Nothing can be scheduled before this — usually an upstream dependency clearing. */
+  /** Nothing can be scheduled before this. */
   earliestStart: Date
   /** Nothing can run past this. */
   deadline: Date
@@ -144,10 +144,7 @@ export function validateSchedule(
       issues.push({ level: 'error', message: 'Runs past the Wednesday 17:00 deadline.' })
     }
     if (s < earliestStart) {
-      issues.push({
-        level: 'error',
-        message: 'Starts before the navigation API is expected to land.',
-      })
+      issues.push({ level: 'error', message: 'Starts in the past.' })
     }
     if (s.getHours() < WORK_DAY_START || e.getHours() > WORK_DAY_END || isWeekend(s)) {
       issues.push({ level: 'warning', message: 'Falls outside your working hours.' })
@@ -178,10 +175,11 @@ export function validateSchedule(
   }
 }
 
-/** The earliest moment work can begin, given upstream dependencies. */
-export function earliestStartFor(clearsAt?: string): Date {
-  const now = DEMO_NOW
-  if (!clearsAt) return now
-  const clears = parse(clearsAt)
-  return clears > now ? clears : now
+/**
+ * The earliest moment work can begin. Without a dependency model this is simply
+ * now — what actually shapes the plan is the calendar, which the availability
+ * calculation already accounts for.
+ */
+export function earliestStartFor(): Date {
+  return DEMO_NOW
 }

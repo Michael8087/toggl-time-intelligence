@@ -9,13 +9,11 @@ import {
   ChevronDown,
   ChevronRight,
   ChevronLeft,
-  CircleDot,
   Clock,
   DollarSign,
   FileText,
   Folder,
   Info,
-  Link2,
   MoreVertical,
   Play,
   Plus,
@@ -636,52 +634,6 @@ export function TaskDrawer() {
           onToggle={() => toggle('subtasks')}
         >
           <p className="text-[14px] text-lo">None.</p>
-        </Section>
-
-        <Section
-          title="Dependencies"
-          open={openSections.dependencies}
-          onToggle={() => toggle('dependencies')}
-          action={
-            <span className="rounded-pill bg-panel-3 px-2 py-0.5 text-2xs font-semibold text-mid">
-              {task.dependencies!.length}
-            </span>
-          }
-        >
-          <ul className="space-y-2">
-            {task.dependencies!.map((d) => (
-              <li
-                key={d.id}
-                className="flex items-start gap-3 rounded-lg border border-hairline px-3 py-2.5"
-              >
-                {d.state === 'done' ? (
-                  <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-ok" />
-                ) : d.state === 'in_progress' ? (
-                  <CircleDot size={15} className="mt-0.5 shrink-0 text-warn" />
-                ) : (
-                  <Link2 size={15} className="mt-0.5 shrink-0 text-lo" />
-                )}
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-baseline gap-x-2">
-                    <span className="font-display text-[13px] font-semibold text-hi">
-                      {d.title}
-                    </span>
-                    <span
-                      className={clsx(
-                        'rounded px-1.5 py-px text-2xs font-semibold',
-                        d.direction === 'upstream'
-                          ? 'bg-panel-3 text-mid'
-                          : 'bg-warn-lo text-warn',
-                      )}
-                    >
-                      {d.direction === 'upstream' ? 'blocks this' : 'waits on this'}
-                    </span>
-                  </div>
-                  <p className="mt-0.5 text-2xs leading-relaxed text-mid">{d.note}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
         </Section>
 
         <Section
