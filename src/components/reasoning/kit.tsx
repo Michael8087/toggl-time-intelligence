@@ -240,31 +240,45 @@ export function Flow({ steps, className }: { steps: FlowStep[]; className?: stri
 }
 
 /** A + B + C = D, laid out so the equals sign carries the argument. */
+function EquationRow({ terms, result }: { terms: string[]; result: string }) {
+  return (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+      {terms.map((term, i) => (
+        <div key={term} className="flex items-center gap-3">
+          <span className="rounded-lg bg-panel-2 px-3 py-1.5 font-display text-[13px] font-semibold text-hi">
+            {term}
+          </span>
+          {i < terms.length - 1 && <span className="font-display text-[15px] text-dim">+</span>}
+        </div>
+      ))}
+      <span className="font-display text-[15px] text-dim">=</span>
+      <span className="rounded-lg bg-pink-lo px-3 py-1.5 font-display text-[13px] font-bold text-pink-hi">
+        {result}
+      </span>
+    </div>
+  )
+}
+
 export function Equation({
   terms,
   result,
+  second,
   note,
 }: {
   terms: string[]
   result: string
+  /** A second row — the same equation, run again once reality changes it. */
+  second?: { terms: string[]; result: string }
   note?: string
 }) {
   return (
     <div className="rounded-xl border border-hairline bg-panel p-5">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-        {terms.map((term, i) => (
-          <div key={term} className="flex items-center gap-3">
-            <span className="rounded-lg bg-panel-2 px-3 py-1.5 font-display text-[13px] font-semibold text-hi">
-              {term}
-            </span>
-            {i < terms.length - 1 && <span className="font-display text-[15px] text-dim">+</span>}
-          </div>
-        ))}
-        <span className="font-display text-[15px] text-dim">=</span>
-        <span className="rounded-lg bg-pink-lo px-3 py-1.5 font-display text-[13px] font-bold text-pink-hi">
-          {result}
-        </span>
-      </div>
+      <EquationRow terms={terms} result={result} />
+      {second && (
+        <div className="mt-3 border-t border-hairline pt-3">
+          <EquationRow terms={second.terms} result={second.result} />
+        </div>
+      )}
       {note && <p className="mt-3.5 text-[13.5px] leading-relaxed text-lo">{note}</p>}
     </div>
   )

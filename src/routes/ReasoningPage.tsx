@@ -27,7 +27,6 @@ const CONTENTS: { id: string; label: string; tone: keyof typeof TONE }[] = [
   { id: 'analysis', label: 'Product analysis', tone: 'analysis' },
   { id: 'prioritization', label: 'Prioritization', tone: 'decision' },
   { id: 'hypothesis', label: 'The bet', tone: 'decision' },
-  { id: 'loops', label: 'Retention', tone: 'strategy' },
   { id: 'measure', label: 'Metrics & risks', tone: 'neutral' },
   { id: 'sources', label: 'Sources', tone: 'neutral' },
 ]
@@ -204,9 +203,19 @@ const CANDIDATES: Candidate[] = [
   },
 ]
 
+/**
+ * Not every lens deserves equal say. Strategy was well covered — the brief,
+ * Toggl's own announcement, a full walkthrough of the product — so it
+ * carries the most weight. Product analysis stands as gathered. User
+ * feedback is a single ranked community board and two Capterra reviews:
+ * real, but thin, so it counts for less here.
+ */
+const WEIGHT = { strategy: 1.5, feasibility: 1, feedback: 0.5 }
+
 function score(c: Candidate): number {
-  const sum = c.strategy.reduce((acc, s) => acc + SCORE[s], 0) + SCORE[c.feasibility] + SCORE[c.feedback]
-  return sum / EFFORT_VALUE[c.effort]
+  const strategySum = c.strategy.reduce((acc, s) => acc + SCORE[s], 0)
+  const weighted = WEIGHT.strategy * strategySum + WEIGHT.feasibility * SCORE[c.feasibility] + WEIGHT.feedback * SCORE[c.feedback]
+  return weighted / EFFORT_VALUE[c.effort]
 }
 
 function EffortBadge({ effort }: { effort: Effort }) {
@@ -449,11 +458,6 @@ export function ReasoningPage() {
             title="Improve the product for individual contributors"
             lede="Improve the experience of an individual contributor, freelancer or contractor, with particular attention to W0 retention. That second half does the work: it rules out every concept whose payoff comes later than that."
           >
-            <Assertion label="The question I set myself">
-              How might Toggl make an individual feel immediate value from its time intelligence, so
-              that they want to come back and use it as part of their work?
-            </Assertion>
-
             <Grid cols={2}>
               <Panel tone="analysis" eyebrow="The persona" filled>
                 <p className="mb-2.5 text-[13.5px] text-hi">
@@ -490,11 +494,9 @@ export function ReasoningPage() {
               </Panel>
             </Grid>
 
-            <Assertion label="The job to be done">
-              Make a realistic commitment to work. Toggl solved tracking; what is unsolved is that
-              committing to work still runs on guesswork, while Toggl already holds the record of
-              what that same work took. The opportunity is to spend what it knows{' '}
-              <em>before</em> the work happens.
+            <Assertion label="The question I set myself">
+              How might Toggl make an individual feel immediate value from its time intelligence, so
+              that they want to come back and use it as part of their work?
             </Assertion>
           </Section>
 
@@ -649,9 +651,6 @@ export function ReasoningPage() {
                 filling it means hand-entering blocks around a calendar, a dependency and a deadline
                 you hold in your head. So the loop never closes.
               </p>
-              <p className="mt-2.5 font-display text-[15px] font-medium text-hi">
-                The prototype does not add a field. It fills in the one already there.
-              </p>
             </Panel>
 
             <Assertion>
@@ -702,17 +701,24 @@ export function ReasoningPage() {
                 <Rating level="low" /> Low
               </span>
               <span className="ml-auto">
-                Ratings are my judgement; Score sums them and divides by Effort — arithmetic on
-                top of a judgement, not a measurement of its own
+                Ratings are my judgement; Score weights and sums them, then divides by Effort —
+                arithmetic on top of a judgement, not a measurement of its own
               </span>
             </div>
 
             <Panel tone="decision" eyebrow="Reading the score honestly" filled>
               <p>
-                Goal updates scores highest at 10.0, and Personal utilization beats all three bets
-                at 8.0 — both cheap, and Goal updates has real, sustained community demand behind
-                it. That is not a bug in the formula. A plain value-over-effort score will always
-                reward the cheap, well-liked item over a harder, unrequested one.
+                Strategy carries 1.5× weight here, Product analysis 1×, User feedback 0.5× — I had
+                the brief, Toggl’s own announcement and a full walkthrough of the product to lean
+                on for the first two; the third is one ranked community board and two Capterra
+                reviews, real but thin, so it counts for less.
+              </p>
+              <p className="mt-2.5">
+                Even weighted down, Goal updates still scores highest at 11.0, and Personal
+                utilization still beats all three bets at 10.0 against 8.5, 8.5 and 5.2. Weighting
+                narrowed the gap — it did not close it, because Goal updates is genuinely cheap and
+                genuinely requested. That is not a flaw in the formula to fix with another
+                adjustment.
               </p>
               <p className="mt-2.5 font-display text-[15px] font-medium text-hi">
                 I am overriding the score here. Estimation, scheduling and replanning are being
@@ -799,21 +805,24 @@ export function ReasoningPage() {
               </div>
             </div>
 
+            <Assertion>
+              The prototype does not add a field. It fills in the one already there.
+            </Assertion>
+
             <Equation
               terms={['Estimate', 'Capacity', 'Existing commitments', 'Deadline']}
               result="Realistic commitment"
-              note="Scheduling is not the secondary half of the concept. It is the action layer that makes the intelligence worth having — and, usefully for a first-week constraint, it needs no personal history at all. When reality changes the commitment, Toggl notices and proposes an adjustment: the same equation, run again."
+              second={{ terms: ['Reality changes', 'Adjustment', 'Rescheduling'], result: 'Realistic commitment' }}
+              note="Scheduling is not the secondary half of the concept. It is the action layer that makes the intelligence worth having — and, usefully for a first-week constraint, it needs no personal history at all. When reality changes the commitment, Toggl notices, proposes an adjustment and reschedules the remainder: the same equation, run again."
             />
-          </Section>
 
-          {/* 07 — The two loops */}
-          <Section
-            id="loops"
-            index="07"
-            tone="strategy"
-            kicker="Retention"
-            title="Initial scheduling gets me in. The living plan brings me back."
-          >
+            <div className="border-t border-hairline pt-6">
+              <div className="eyebrow text-pink">Retention</div>
+              <h3 className="mt-2 font-display text-[19px] font-bold leading-snug text-hi">
+                Initial scheduling gets me in. The living plan brings me back.
+              </h3>
+            </div>
+
             <Grid cols={2}>
               <Panel eyebrow="Activation — day one">
                 <p className="text-hi">“Toggl immediately helped me understand this task.”</p>
@@ -874,10 +883,10 @@ export function ReasoningPage() {
             </Panel>
           </Section>
 
-          {/* 08 — Metrics & risks */}
+          {/* 07 — Metrics & risks */}
           <Section
             id="measure"
-            index="08"
+            index="07"
             kicker="Metrics & risks"
             title="What would tell me this is working, and what would sink it"
           >
@@ -932,7 +941,7 @@ export function ReasoningPage() {
           </Section>
 
           {/* 09 — Sources */}
-          <Section id="sources" index="09" kicker="Sources" title="What this is built on">
+          <Section id="sources" index="08" kicker="Sources" title="What this is built on">
             <div className="divide-y divide-hairline rounded-xl border border-hairline bg-panel">
               {(
                 [
