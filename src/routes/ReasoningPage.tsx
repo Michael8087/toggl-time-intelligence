@@ -116,14 +116,17 @@ const COMMUNITY: { group: string; note: string; items: string[] }[] = [
 
 /* --------------------------------------------------------------- The matrix */
 
-const DIMENSIONS = [
-  'IC value',
-  'W0 immediacy',
-  'Recurring use',
-  'Toggl 2.0 fit',
-  'Data advantage',
-  'Uses what exists',
-]
+/**
+ * W0 immediacy is the brief's own hard constraint, kept as a column in its
+ * own right. The other four are Marty Cagan's product risks (Inspired):
+ * value, usability, feasibility, viability — will the IC want it, can they
+ * use it without being taught, can it be built, does it fit where Toggl is
+ * headed and what only Toggl's data can do.
+ */
+const DIMENSIONS = ['W0 immediacy', 'Value', 'Usability', 'Feasibility', 'Viability']
+
+/** high = 3, med = 2, low = 1 — summed across the five columns, out of 15. */
+const SCORE: Record<Level, number> = { high: 3, med: 2, low: 1 }
 
 interface Candidate {
   name: string
@@ -132,12 +135,12 @@ interface Candidate {
 }
 
 const CANDIDATES: Candidate[] = [
-  { name: 'Intelligent estimation', scores: ['high', 'high', 'med', 'high', 'high', 'med'], verdict: 'build' },
-  { name: 'Intelligent scheduling', scores: ['high', 'high', 'high', 'high', 'med', 'high'], verdict: 'build' },
-  { name: 'Adaptive replanning', scores: ['high', 'med', 'high', 'high', 'high', 'high'], verdict: 'build' },
-  { name: 'Goal updates & limits', scores: ['med', 'med', 'med', 'med', 'low', 'med'], verdict: 'later' },
-  { name: 'Custom dashboards / charts', scores: ['med', 'low', 'low', 'low', 'low', 'med'], verdict: 'no' },
-  { name: 'Personal utilization', scores: ['low', 'low', 'med', 'med', 'med', 'med'], verdict: 'no' },
+  { name: 'Intelligent estimation', scores: ['high', 'high', 'high', 'med', 'high'], verdict: 'build' },
+  { name: 'Intelligent scheduling', scores: ['high', 'high', 'high', 'high', 'high'], verdict: 'build' },
+  { name: 'Adaptive replanning', scores: ['med', 'high', 'high', 'high', 'high'], verdict: 'build' },
+  { name: 'Goal updates & limits', scores: ['med', 'med', 'med', 'med', 'low'], verdict: 'later' },
+  { name: 'Custom dashboards / charts', scores: ['low', 'med', 'med', 'med', 'low'], verdict: 'no' },
+  { name: 'Personal utilization', scores: ['low', 'low', 'med', 'med', 'med'], verdict: 'no' },
 ]
 
 function Matrix() {
@@ -157,6 +160,9 @@ function Matrix() {
                 {d}
               </th>
             ))}
+            <th className="px-3 py-3 text-center font-display text-2xs font-semibold uppercase tracking-[0.06em] text-lo">
+              Index
+            </th>
             <th className="px-5 py-3 text-right font-display text-2xs font-semibold uppercase tracking-[0.1em] text-lo">
               Call
             </th>
@@ -179,6 +185,12 @@ function Matrix() {
                   <Rating level={s} />
                 </td>
               ))}
+              <td className="px-3 py-2.5 text-center">
+                <span className="tnum font-display text-[13px] font-bold text-hi">
+                  {c.scores.reduce((sum, s) => sum + SCORE[s], 0)}
+                </span>
+                <span className="text-2xs text-dim">/15</span>
+              </td>
               <td className="px-5 py-2.5 text-right">
                 <Verdict kind={c.verdict} />
               </td>
@@ -614,7 +626,7 @@ export function ReasoningPage() {
               <span className="flex items-center gap-2">
                 <Rating level="low" /> Low
               </span>
-              <span className="ml-auto">My judgement, not measurements</span>
+              <span className="ml-auto">Ratings are my judgement; the index just sums them, out of 15</span>
             </div>
 
             <div className="grid gap-x-8 gap-y-4 rounded-xl border border-hairline bg-panel p-[18px] sm:grid-cols-2">
