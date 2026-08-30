@@ -562,31 +562,15 @@ export function ReasoningPage() {
               </p>
             </Panel>
 
-            <Grid cols={2}>
-              <Panel eyebrow="Today — Copilot">
-                <p className="font-display text-[14.5px] text-hi">
-                  “How long do you think this will take?”
-                </p>
-                <p className="mt-2 text-[13px] leading-relaxed text-lo">
-                  You have to know the question exists and ask it. The AI answers; the calendar, the
-                  deadline and the decision stay yours.
-                </p>
-              </Panel>
-              <Panel tone="strategy" eyebrow="Proposed" filled>
-                <Flow
-                  steps={[
-                    { label: 'Task arrives' },
-                    { label: 'Estimate', built: true },
-                    { label: 'Capacity', built: true },
-                    { label: 'Schedule', built: true },
-                    { label: 'Replan', built: true },
-                  ]}
-                />
-                <p className="mt-2.5 text-[13px] leading-relaxed text-mid">
-                  Nobody had to ask anything.
-                </p>
-              </Panel>
-            </Grid>
+            <Panel eyebrow="Today — Copilot">
+              <p className="font-display text-[14.5px] text-hi">
+                “How long do you think this will take?”
+              </p>
+              <p className="mt-2 text-[13px] leading-relaxed text-lo">
+                You have to know the question exists and ask it. The AI answers; the calendar, the
+                deadline and the decision stay yours.
+              </p>
+            </Panel>
 
             <Assertion>
               The opportunity was never to make the AI answer more questions. It was to stop
