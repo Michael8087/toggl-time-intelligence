@@ -522,12 +522,11 @@ export function ReasoningPage() {
                   ]}
                 />
               </div>
+              <p className="mt-4 font-display text-[15px] font-medium leading-relaxed text-hi">
+                For an individual contributor, “do we have the capacity to take this on?” becomes:
+                can I realistically commit to this work, and when can I actually do it?
+              </p>
             </Panel>
-
-            <Assertion label="My interpretation — not Toggl’s claim">
-              For an individual contributor, “do we have the capacity to take this on?” becomes: can
-              I realistically commit to this work, and when can I actually do it?
-            </Assertion>
           </Section>
 
           {/* 04 — Product analysis */}
