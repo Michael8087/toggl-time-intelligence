@@ -652,15 +652,6 @@ export function ReasoningPage() {
               ))}
             </Grid>
 
-            <Panel tone="decision" filled>
-              <p>
-                Had feedback chosen, I would be shipping a revert of the timer page — worth doing,
-                but maintenance rather than strategy. Goal updates are the sharper test: three
-                ranked threads, obviously wanted, cheap. I still did not take them, because they
-                improve a screen rather than change a decision the IC has to make.
-              </p>
-            </Panel>
-
             <Matrix />
 
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-2xs text-lo">
