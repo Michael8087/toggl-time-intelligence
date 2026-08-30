@@ -3,14 +3,13 @@
 @tailwind utilities;
 
 /*
- * Toggl Track 2.0 ships light and dark. Both are sampled from the real app.
+ * One theme, sampled from the real app.
  *
- * The important detail is that entry colours are not simply inverted: in light
- * mode a *logged* entry is a saturated fill with white text, in dark mode it is
- * a bright pastel fill with near-black text. A *planned* entry is, in both
- * themes, a low-contrast tint of the same hue. That contrast between "solid"
- * and "ghosted" is the app's existing vocabulary for actual versus plan, and
- * this concept is built on top of it rather than beside it.
+ * Colours still resolve through CSS variables, because the entry palette has
+ * to stay in one place: a *logged* entry is a saturated fill with white text,
+ * a *planned* entry a low-contrast tint of the same hue. That contrast between
+ * "solid" and "ghosted" is the app's existing vocabulary for actual versus
+ * plan, and this concept is built on top of it rather than beside it.
  */
 
 @layer base {
@@ -57,50 +56,6 @@
     --c-bad-lo: 252 234 228;
 
     --c-shadow: 26 20 32;
-  }
-
-  .dark {
-    color-scheme: dark;
-
-    --c-canvas: 0 0 0;
-    --c-surface: 11 11 14;
-    --c-panel: 20 20 24;
-    --c-panel-2: 28 28 33;
-    --c-panel-3: 36 36 42;
-    --c-hairline: 38 38 44;
-    --c-hairline-2: 53 53 61;
-
-    --c-hi: 237 235 239;
-    --c-mid: 154 150 161;
-    --c-lo: 108 104 116;
-    --c-dim: 74 71 82;
-
-    --c-pink: 232 69 155;
-    --c-pink-hi: 243 104 176;
-    --c-pink-lo: 46 16 38;
-    --c-plum: 58 32 68;
-    --c-on-plum: 237 235 239;
-
-    --c-e-pink: 238 95 160;
-    --c-e-yellow: 239 201 63;
-    --c-e-blue: 143 197 232;
-    --c-e-green: 111 203 159;
-    --c-e-lilac: 182 155 232;
-    --c-on-entry: 17 17 20;
-    --c-e-planned: 23 69 107;
-    --c-on-planned: 207 230 245;
-    --c-e-maroon: 122 30 60;
-    --c-on-maroon: 247 213 226;
-    --c-timeoff: 0 0 0;
-
-    --c-ok: 78 216 160;
-    --c-ok-lo: 15 46 36;
-    --c-warn: 239 201 63;
-    --c-warn-lo: 46 39 17;
-    --c-bad: 240 113 79;
-    --c-bad-lo: 46 22 16;
-
-    --c-shadow: 0 0 0;
   }
 
   html,

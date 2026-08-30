@@ -56,19 +56,17 @@ export function Section({
 }) {
   const t = TONE[tone]
   return (
-    <section id={id} className="scroll-mt-24 border-t border-hairline py-14 first:border-t-0">
+    <section id={id} className="scroll-mt-24 border-t border-hairline py-8 first:border-t-0">
       <div className="flex items-center gap-3">
         <span className={clsx('h-1.5 w-1.5 rounded-full', t.dot)} />
         <span className={clsx('eyebrow', t.text)}>{kicker}</span>
         <span className="tnum ml-auto font-display text-2xs font-semibold text-dim">{index}</span>
       </div>
-      <h2 className="mt-3 max-w-3xl font-display text-[27px] font-bold leading-[1.2] text-hi sm:text-[32px]">
+      <h2 className="mt-2.5 max-w-3xl font-display text-[22px] font-bold leading-[1.22] text-hi sm:text-[26px]">
         {title}
       </h2>
-      {lede && (
-        <p className="mt-4 max-w-2xl text-[15.5px] leading-relaxed text-mid">{lede}</p>
-      )}
-      <div className="mt-8 space-y-6">{children}</div>
+      {lede && <p className="mt-2.5 max-w-2xl text-[14.5px] leading-relaxed text-mid">{lede}</p>}
+      <div className="mt-5 space-y-3.5">{children}</div>
     </section>
   )
 }
@@ -124,7 +122,7 @@ export function Panel({
   return (
     <div
       className={clsx(
-        'rounded-xl border p-5',
+        'rounded-xl border p-[18px]',
         filled ? clsx(t.border, t.bg) : 'border-hairline bg-panel',
         className,
       )}
@@ -298,30 +296,6 @@ export function Loop({ steps, caption }: { steps: string[]; caption: string }) {
       <p className="mt-2.5 text-center font-display text-[12.5px] font-medium text-pink">
         {caption}
       </p>
-    </div>
-  )
-}
-
-/** Today versus proposed, side by side. */
-export function Compare({
-  left,
-  right,
-}: {
-  left: { title: string; caption: string; body: ReactNode }
-  right: { title: string; caption: string; body: ReactNode }
-}) {
-  return (
-    <div className="grid gap-4 sm:grid-cols-2">
-      <div className="rounded-xl border border-hairline bg-panel-2/50 p-5">
-        <div className="eyebrow text-lo">{left.caption}</div>
-        <h3 className="mt-2 font-display text-[16px] font-semibold text-hi">{left.title}</h3>
-        <div className="mt-3 text-[14px] leading-relaxed text-mid">{left.body}</div>
-      </div>
-      <div className="rounded-xl border border-pink/35 bg-pink-lo/60 p-5">
-        <div className="eyebrow text-pink">{right.caption}</div>
-        <h3 className="mt-2 font-display text-[16px] font-semibold text-hi">{right.title}</h3>
-        <div className="mt-3 text-[14px] leading-relaxed text-mid">{right.body}</div>
-      </div>
     </div>
   )
 }

@@ -14,13 +14,10 @@ import {
   PanelLeftClose,
   PieChart,
   RotateCcw,
-  Moon,
   Send,
   Settings,
   Sparkles,
   ScrollText,
-  Sun,
-  SunMoon,
   TrendingUp,
   Users,
   ArrowUp,
@@ -245,9 +242,7 @@ function Sidebar() {
 
 /** Sits above the content: the case-study controls, kept out of the product chrome. */
 function DemoBar() {
-  const { showNotes, toggleNotes, reset, theme, setTheme, resolvedTheme } = useDemo()
-  const nextTheme = () =>
-    setTheme(theme === 'auto' ? 'light' : theme === 'light' ? 'dark' : 'auto')
+  const { showNotes, toggleNotes, reset } = useDemo()
 
   return (
     <div className="flex h-9 shrink-0 items-center gap-2 border-b border-hairline bg-surface px-4">
@@ -266,24 +261,6 @@ function DemoBar() {
           <ScrollText size={11} />
           Reasoning
         </Link>
-        <button
-          onClick={nextTheme}
-          title={
-            theme === 'auto'
-              ? `Auto — ${resolvedTheme} right now. Click for light.`
-              : `${theme[0].toUpperCase()}${theme.slice(1)}. Click to change.`
-          }
-          className="inline-flex h-6 items-center gap-1.5 rounded-pill border border-hairline-2 px-2.5 font-display text-[11px] font-semibold text-mid transition-colors hover:border-lo hover:text-hi"
-        >
-          {theme === 'auto' ? (
-            <SunMoon size={11} />
-          ) : theme === 'light' ? (
-            <Sun size={11} />
-          ) : (
-            <Moon size={11} />
-          )}
-          {theme === 'auto' ? 'Auto' : theme === 'light' ? 'Light' : 'Dark'}
-        </button>
         <button
           onClick={toggleNotes}
           className={clsx(

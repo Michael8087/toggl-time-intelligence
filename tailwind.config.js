@@ -1,11 +1,10 @@
-/** Every colour resolves through a CSS variable so the app renders in Toggl's
- *  light and dark themes from one set of class names. Channels are stored as
- *  raw RGB triples so Tailwind's `/opacity` modifiers keep working.
+/** Every colour resolves through a CSS variable so the palette lives in one
+ *  place. Channels are stored as raw RGB triples so Tailwind's `/opacity`
+ *  modifiers keep working.
  *  @type {import('tailwindcss').Config} */
 const c = (name) => `rgb(var(${name}) / <alpha-value>)`
 
 export default {
-  darkMode: 'class',
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
@@ -32,7 +31,7 @@ export default {
         plum: c('--c-plum'), // active nav pill
         'on-plum': c('--c-on-plum'),
 
-        // Entry fills — identical in both themes, always with near-black text.
+        // Entry fills.
         'e-pink': '#EE5FA0',
         'e-yellow': '#EFC93F',
         'e-blue': '#8FC5E8',

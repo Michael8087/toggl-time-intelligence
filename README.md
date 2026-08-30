@@ -70,8 +70,6 @@ npm install && npm run dev
 asked for, what the community's ranked feedback actually says, what Toggl's own 2.0
 announcement commits to, and how those resolve into this bet rather than the most-requested
 feature. Turn on **Case-study notes** to see the same reasoning annotated in place.
-The theme control is time-aware: light through the working day, dark in the evening, with a
-manual override.
 
 ## Scope
 

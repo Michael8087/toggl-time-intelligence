@@ -34,8 +34,6 @@ import {
 } from '../lib/scheduler'
 import { DEMO_NOW, at, hoursBetween, iso, parse } from '../lib/time'
 
-export type ThemePref = 'auto' | 'light' | 'dark'
-
 interface State {
   phase: Phase
   estimateMode: EstimateMode
@@ -46,7 +44,6 @@ interface State {
   revealed: number
   simRunning: boolean
   showNotes: boolean
-  theme: ThemePref
   /** The task drawer, opened over the Tasks list. */
   drawerTaskId: string | null
   /** Which sub-view of the drawer's Time section is open. */
@@ -73,7 +70,6 @@ type Action =
   | { type: 'complete' }
   | { type: 'report' }
   | { type: 'toggleNotes' }
-  | { type: 'setTheme'; theme: ThemePref }
   | { type: 'openDrawer'; taskId: string }
   | { type: 'closeDrawer' }
   | { type: 'setTimeView'; view: State['timeView'] }
@@ -90,7 +86,6 @@ const initialState: State = {
   revealed: 0,
   simRunning: false,
   showNotes: false,
-  theme: 'auto',
   drawerTaskId: null,
   timeView: 'summary',
   activeChange: null,
@@ -139,8 +134,6 @@ function reducer(state: State, action: Action): State {
       return { ...state, phase: 'reported' }
     case 'toggleNotes':
       return { ...state, showNotes: !state.showNotes }
-    case 'setTheme':
-      return { ...state, theme: action.theme }
     case 'openDrawer':
       return { ...state, drawerTaskId: action.taskId, timeView: 'summary' }
     case 'closeDrawer':
@@ -163,7 +156,7 @@ function reducer(state: State, action: Action): State {
         activeChange: null,
       }
     case 'reset':
-      return { ...initialState, showNotes: state.showNotes, theme: state.theme }
+      return { ...initialState, showNotes: state.showNotes }
     default:
       return state
   }
@@ -189,13 +182,10 @@ interface DemoValue extends State {
   simDone: boolean
   /** Progress through the story, 0–1, for the stepper. */
   stepIndex: number
-  /** What `theme: 'auto'` currently resolves to. */
-  resolvedTheme: 'light' | 'dark'
 
   raiseChange: (change: PlanChange) => void
   dismissChange: () => void
   acceptChange: () => void
-  setTheme: (t: ThemePref) => void
   openDrawer: (taskId: string) => void
   closeDrawer: () => void
   setTimeView: (v: State['timeView']) => void
@@ -283,20 +273,6 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     }
   }, [state.simRunning, state.revealed])
 
-  /* Time-aware theme: light through the working day, dark in the evening.
-     An explicit choice always wins. */
-  const resolvedTheme: 'light' | 'dark' =
-    state.theme === 'auto'
-      ? (() => {
-          const h = new Date().getHours()
-          return h >= 7 && h < 18 ? 'light' : 'dark'
-        })()
-      : state.theme
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', resolvedTheme === 'dark')
-  }, [resolvedTheme])
-
   /**
    * Apply the accepted adjustment. Each change knows what it does to the
    * calendar; the schedule is then re-derived from whatever capacity is left,
@@ -357,13 +333,11 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     atCheckpoint: state.revealed === CHECKPOINT,
     simDone: state.revealed >= SIMULATED_ENTRIES.length,
     stepIndex: PHASE_ORDER.indexOf(state.phase),
-    resolvedTheme,
 
     commitments,
     raiseChange: (change) => dispatch({ type: 'raiseChange', change }),
     dismissChange: () => dispatch({ type: 'dismissChange' }),
     acceptChange,
-    setTheme: (theme) => dispatch({ type: 'setTheme', theme }),
     openDrawer: (taskId) => dispatch({ type: 'openDrawer', taskId }),
     closeDrawer: () => dispatch({ type: 'closeDrawer' }),
     setTimeView: (view) => dispatch({ type: 'setTimeView', view }),
