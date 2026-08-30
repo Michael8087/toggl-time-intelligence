@@ -204,13 +204,13 @@ const CANDIDATES: Candidate[] = [
 ]
 
 /**
- * Not every lens deserves equal say. Strategy was well covered — the brief,
- * Toggl's own announcement, a full walkthrough of the product — so it
- * carries the most weight. Product analysis stands as gathered. User
- * feedback is a single ranked community board and two Capterra reviews:
- * real, but thin, so it counts for less here.
+ * Weights read as confidence, 0–1. Strategy and Product analysis were both
+ * well covered — the brief, Toggl's own announcement, a full walkthrough of
+ * the product — full confidence on each. User feedback is one ranked
+ * community board and two Capterra reviews: real, but thin evidence to hang
+ * a decision on, so it counts for a quarter as much.
  */
-const WEIGHT = { strategy: 1.5, feasibility: 1.5, feedback: 0.5 }
+const WEIGHT = { strategy: 1, feasibility: 1, feedback: 0.25 }
 
 function score(c: Candidate): number {
   const strategySum = c.strategy.reduce((acc, s) => acc + SCORE[s], 0)
@@ -253,23 +253,23 @@ function Matrix() {
             </th>
             <th className={clsx(SUB_TH, 'border-l border-hairline/40')}>
               IC value
-              <Weight value="1.5" />
+              <Weight value="1.0" />
             </th>
             <th className={SUB_TH}>
               W0 immediacy
-              <Weight value="1.5" />
+              <Weight value="1.0" />
             </th>
             <th className={SUB_TH}>
               Toggl 2.0 fit
-              <Weight value="1.5" />
+              <Weight value="1.0" />
             </th>
             <th className={clsx(SUB_TH, 'border-l border-hairline/40')}>
               Feasibility
-              <Weight value="1.5" />
+              <Weight value="1.0" />
             </th>
             <th className={clsx(SUB_TH, 'border-l border-hairline/40')}>
               Community demand
-              <Weight value="0.5" tone="lo" />
+              <Weight value="0.25" tone="lo" />
             </th>
             <th className={clsx(SUB_TH, 'border-l border-hairline/40 text-center')}>Effort</th>
             <th className={clsx(SUB_TH, 'text-center')}>Score</th>
@@ -806,6 +806,31 @@ export function ReasoningPage() {
               note="Scheduling is not the secondary half of the concept. It is the action layer that makes the intelligence worth having — and, usefully for a first-week constraint, it needs no personal history at all. The same equation covers the adjustment: when reality changes the commitment, Toggl folds it straight back in, rather than running a second calculation."
             />
 
+            <Panel>
+              <div className="eyebrow mb-3 text-lo">The second loop — improvements over time</div>
+              <Flow
+                steps={[
+                  { label: 'Estimate', built: true },
+                  { label: 'Actual' },
+                  { label: 'Variance' },
+                  { label: 'Learn', built: true },
+                  { label: 'Better next estimate', built: true },
+                ]}
+              />
+              <div className="mt-3.5 space-y-1.5 border-t border-hairline pt-3.5 text-[13px] leading-relaxed text-mid">
+                <p>
+                  <strong className="text-hi">Cold start, answered honestly</strong> — day one leans
+                  on the client’s project data and the task’s scope, and says so: 7–15h at low
+                  confidence, tightening to 8–12h by day five.
+                </p>
+                <p>
+                  <strong className="text-hi">History has to expire</strong> — an AI coding
+                  assistant entering the workflow resets the pace, and a model averaging a flat year
+                  would still quote the old one.
+                </p>
+              </div>
+            </Panel>
+
             <div className="border-t border-hairline pt-6">
               <div className="eyebrow text-pink">Retention</div>
               <h3 className="mt-2 font-display text-[19px] font-bold leading-snug text-hi">
@@ -850,30 +875,6 @@ export function ReasoningPage() {
               </p>
             </div>
 
-            <Panel>
-              <div className="eyebrow mb-3 text-lo">The slower loop</div>
-              <Flow
-                steps={[
-                  { label: 'Estimate', built: true },
-                  { label: 'Actual' },
-                  { label: 'Variance' },
-                  { label: 'Learn', built: true },
-                  { label: 'Better next estimate', built: true },
-                ]}
-              />
-              <div className="mt-3.5 space-y-1.5 border-t border-hairline pt-3.5 text-[13px] leading-relaxed text-mid">
-                <p>
-                  <strong className="text-hi">Cold start, answered honestly</strong> — day one leans
-                  on the client’s project data and the task’s scope, and says so: 7–15h at low
-                  confidence, tightening to 8–12h by day five.
-                </p>
-                <p>
-                  <strong className="text-hi">History has to expire</strong> — an AI coding
-                  assistant entering the workflow resets the pace, and a model averaging a flat year
-                  would still quote the old one.
-                </p>
-              </div>
-            </Panel>
           </Section>
 
           {/* 07 — Metrics & risks */}
