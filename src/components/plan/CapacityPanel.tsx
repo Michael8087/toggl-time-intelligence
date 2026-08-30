@@ -1,19 +1,25 @@
 import clsx from 'clsx'
-import { AlertTriangle, ArrowRight, CalendarClock, CheckCircle2, Eye, Lock } from 'lucide-react'
+import { useState } from 'react'
+import {
+  AlertTriangle,
+  ArrowRight,
+  CalendarClock,
+  CheckCircle2,
+  ChevronDown,
+  Eye,
+  Lock,
+} from 'lucide-react'
 import { Button, Note } from '../ui'
 import { CalendarLegend, WeekCalendar } from '../WeekCalendar'
 import { useDemo } from '../../state/DemoContext'
 
 import {
   DEMO_NOW,
-  formatDate,
   formatDayLong,
   formatDuration,
-  formatRange,
   formatTime,
   hoursBetween,
   parse,
-  sameDay,
   weekDays,
 } from '../../lib/time'
 
@@ -28,6 +34,7 @@ export function CapacityPanel() {
     estimate,
     commitments,
   } = useDemo()
+  const [showConstraints, setShowConstraints] = useState(false)
   const days = weekDays(DEMO_NOW)
   const fits = availableHours >= planHours
   const buffer = availableHours - planHours
@@ -46,10 +53,6 @@ export function CapacityPanel() {
     const to = end < deadline ? end : deadline
     return sum + Math.max(0, hoursBetween(from, to))
   }, 0)
-
-  const byDay = days
-    .map((d) => ({ day: d, wins: windows.filter((w) => sameDay(w.start, d)) }))
-    .filter((g) => g.wins.length > 0)
 
   return (
     <div className="p-6">
@@ -134,86 +137,59 @@ export function CapacityPanel() {
             </div>
           )}
 
-          {/* Constraints */}
-          <div className="mb-6 rounded-xl border border-hairline bg-surface px-4 py-3.5">
-            <div className="eyebrow mb-2.5">What shapes when this can happen</div>
-            <ul className="space-y-2.5">
-              <li className="flex gap-2.5">
-                <CalendarClock size={15} className="mt-0.5 shrink-0 text-mid" />
-                <div className="min-w-0 text-[13px] leading-relaxed text-mid">
-                  Your calendar already holds{' '}
-                  <span className="font-display font-semibold text-hi">
-                    {formatDuration(committedHours)} of meetings and other client work
-                  </span>{' '}
-                  between now and the deadline. Only what is left over is offered.
-                </div>
-              </li>
-              <li className="flex gap-2.5">
-                <Lock size={15} className="mt-0.5 shrink-0 text-bad" />
-                <div className="min-w-0 text-[13px] leading-relaxed text-mid">
-                  The task is due{' '}
-                  <span className="font-display font-semibold text-hi">
-                    {formatDayLong(deadline)} {formatTime(deadline)}
-                  </span>
-                  , so nothing is scheduled past it.
-                </div>
-              </li>
-              <li className="flex gap-2.5">
-                <Eye size={15} className="mt-0.5 shrink-0 text-mid" />
-                <div className="min-w-0 text-[13px] leading-relaxed text-mid">
-                  None of this is fixed. Toggl keeps watching the plan after you commit to it,
-                  and says so if any of these change.
-                </div>
-              </li>
-            </ul>
-            <div className="mt-3 flex items-center gap-2 border-t border-hairline pt-3">
-              <span className="eyebrow">Earliest possible start</span>
-              <span className="font-display text-[13px] font-semibold text-hi">
-                {formatDayLong(earliestStart)} {formatTime(earliestStart)}
-              </span>
-            </div>
-          </div>
+          {/* Constraints — folded away, like the estimate's reasoning. The
+              headline numbers are the point; this is the audit trail. */}
+          <div className="mb-6 overflow-hidden rounded-xl border border-hairline">
+            <button
+              onClick={() => setShowConstraints(!showConstraints)}
+              className="flex w-full items-center gap-2 px-4 py-3 text-left font-display text-[13px] font-semibold text-pink transition-colors hover:bg-panel-2"
+            >
+              <ChevronDown
+                size={15}
+                className={clsx('transition-transform', showConstraints && 'rotate-180')}
+              />
+              {showConstraints ? 'Hide' : 'Show'} what shapes when this can happen
+            </button>
 
-          {/* Day by day */}
-          <div className="mb-6">
-            <div className="eyebrow mb-2.5">Where the free time actually is</div>
-            <ul className="divide-y divide-hairline rounded-xl border border-hairline">
-              {byDay.map(({ day, wins }) => {
-                const total = wins.reduce((s, w) => s + hoursBetween(w.start, w.end), 0)
-                const busy = commitments.filter((c) => sameDay(parse(c.start), day))
-                return (
-                  <li key={day.toISOString()} className="flex gap-4 px-4 py-3">
-                    <div className="w-[104px] shrink-0">
-                      <div className="font-display text-[13px] font-semibold text-hi">
-                        {formatDayLong(day)}
-                      </div>
-                      <div className="text-2xs text-lo">{formatDate(day)}</div>
-                    </div>
-                    <div className="min-w-0 flex-1 space-y-1">
-                      {busy.map((c) => (
-                        <div key={c.id} className="flex items-baseline gap-2 text-[13px]">
-                          <span className="tnum w-[86px] shrink-0 text-mid">
-                            {formatRange(parse(c.start), parse(c.end))}
-                          </span>
-                          <span className="truncate text-mid">{c.title}</span>
-                        </div>
-                      ))}
-                      {wins.map((w, i) => (
-                        <div key={i} className="flex items-baseline gap-2 text-[13px]">
-                          <span className="tnum w-[86px] shrink-0 font-semibold text-ok">
-                            {formatRange(w.start, w.end)}
-                          </span>
-                          <span className="font-display font-semibold text-ok">Available</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="tnum shrink-0 self-center font-display text-[13px] font-semibold text-ok">
-                      {formatDuration(total)}
+            {showConstraints && (
+              <div className="animate-fade-in border-t border-hairline bg-surface px-4 py-3.5">
+                <ul className="space-y-2.5">
+                  <li className="flex gap-2.5">
+                    <CalendarClock size={15} className="mt-0.5 shrink-0 text-mid" />
+                    <div className="min-w-0 text-[13px] leading-relaxed text-mid">
+                      Your calendar already holds{' '}
+                      <span className="font-display font-semibold text-hi">
+                        {formatDuration(committedHours)} of meetings and other client work
+                      </span>{' '}
+                      between now and the deadline. Only what is left over is offered.
                     </div>
                   </li>
-                )
-              })}
-            </ul>
+                  <li className="flex gap-2.5">
+                    <Lock size={15} className="mt-0.5 shrink-0 text-bad" />
+                    <div className="min-w-0 text-[13px] leading-relaxed text-mid">
+                      The task is due{' '}
+                      <span className="font-display font-semibold text-hi">
+                        {formatDayLong(deadline)} {formatTime(deadline)}
+                      </span>
+                      , so nothing is scheduled past it.
+                    </div>
+                  </li>
+                  <li className="flex gap-2.5">
+                    <Eye size={15} className="mt-0.5 shrink-0 text-mid" />
+                    <div className="min-w-0 text-[13px] leading-relaxed text-mid">
+                      None of this is fixed. Toggl keeps watching the plan after you commit to
+                      it, and says so if any of these change.
+                    </div>
+                  </li>
+                </ul>
+                <div className="mt-3 flex items-center gap-2 border-t border-hairline pt-3">
+                  <span className="eyebrow">Earliest possible start</span>
+                  <span className="font-display text-[13px] font-semibold text-hi">
+                    {formatDayLong(earliestStart)} {formatTime(earliestStart)}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="mb-4 overflow-hidden rounded-xl border border-hairline">
