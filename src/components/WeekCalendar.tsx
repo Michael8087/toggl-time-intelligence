@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from 'react'
 import {
   ArrowRight,
   CalendarClock,
+  ChevronsDownUp,
+  ChevronsUpDown,
   DollarSign,
   Flag,
   Folder,
@@ -256,6 +258,7 @@ export function WeekCalendar({
   const scrollRef = useRef<HTMLDivElement>(null)
   const [drag, setDrag] = useState<DragState | null>(null)
   const [hoverDay, setHoverDay] = useState<number | null>(null)
+  const [showTasks, setShowTasks] = useState(true)
   const [detail, setDetail] = useState<EntryDetail | null>(null)
 
   // Open on the working day rather than at midnight.
@@ -465,11 +468,22 @@ export function WeekCalendar({
       {taskBars.length > 0 && (
         <div className="flex border-b border-hairline">
           <div
-            className="flex shrink-0 items-start justify-center pt-2"
+            className="group relative flex shrink-0 items-start justify-center pt-2"
             style={{ width: GUTTER }}
           >
-            <X size={14} className="cursor-pointer text-lo hover:text-hi" />
+            <button
+              onClick={() => setShowTasks(!showTasks)}
+              className="text-lo transition-colors hover:text-hi"
+              aria-expanded={showTasks}
+              aria-label={showTasks ? 'Hide tasks' : 'Show tasks'}
+            >
+              {showTasks ? <ChevronsDownUp size={15} /> : <ChevronsUpDown size={15} />}
+            </button>
+            <span className="pointer-events-none absolute -top-1 left-1 z-50 hidden -translate-y-full whitespace-nowrap rounded-lg border border-hairline bg-panel px-3 py-1.5 font-display text-[13px] text-hi shadow-pop group-hover:block">
+              {showTasks ? 'Hide tasks' : 'Show tasks'}
+            </span>
           </div>
+          {showTasks && (
           <div className="min-w-0 flex-1 space-y-1 py-2 pr-1">
             {lanes.map((lane, li) => (
               <div key={li} className="relative h-[22px]">
@@ -494,6 +508,7 @@ export function WeekCalendar({
               </div>
             ))}
           </div>
+          )}
         </div>
       )}
 
