@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type RefObject } from 'react'
 import clsx from 'clsx'
-import { ArrowUpRight, ExternalLink } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, ExternalLink } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import {
   Assertion,
@@ -73,6 +73,17 @@ function useActiveSection(root: RefObject<HTMLElement | null>) {
 /* -------------------------------------------------------- The ranked list -
  * Titles as captured from the Toggl Community product-feedback board, ranked
  * by engagement. Grouped here by what the thread is actually asking for.     */
+
+/** Verified against capterra.com/p/247745/Toggl/reviews/ on fetch — quoted verbatim,
+ *  reviewer name and role exactly as Capterra displays them. G2 could not be added: its
+ *  review pages return HTTP 403 to fetching, so nothing from it is quoted here. */
+const CAPTERRA_REVIEWS: { quote: string; who: string }[] = [
+  { quote: 'the jump to get more users is a bit pricey', who: 'Renato R. · Director' },
+  {
+    quote: 'Custom reporting and deeper filtering are locked behind paid plans, which feels limiting for more advanced needs.',
+    who: 'Cristiano F. · Consultant',
+  },
+]
 
 const COMMUNITY: { group: string; note: string; items: string[] }[] = [
   {
@@ -179,6 +190,55 @@ function Matrix() {
           ))}
         </tbody>
       </table>
+    </div>
+  )
+}
+
+/** The community board, collapsed to titles-and-counts until a group is opened. */
+function CommunityBoard() {
+  const [open, setOpen] = useState<Set<string>>(new Set())
+  const toggle = (group: string) =>
+    setOpen((prev) => {
+      const next = new Set(prev)
+      if (next.has(group)) next.delete(group)
+      else next.add(group)
+      return next
+    })
+
+  return (
+    <div className="divide-y divide-hairline rounded-xl border border-hairline bg-panel">
+      {COMMUNITY.map((g) => {
+        const isOpen = open.has(g.group)
+        return (
+          <div key={g.group} className="px-5 py-3.5">
+            <button
+              onClick={() => toggle(g.group)}
+              className="flex w-full flex-wrap items-baseline gap-x-2.5 text-left"
+              aria-expanded={isOpen}
+            >
+              <span className="font-display text-[13.5px] font-semibold text-hi">{g.group}</span>
+              <span className="inline-flex items-center gap-1 font-display text-2xs font-semibold text-e-blue">
+                {g.items.length} thread{g.items.length > 1 ? 's' : ''}
+                <ChevronDown
+                  size={11}
+                  className={clsx('transition-transform', isOpen && 'rotate-180')}
+                />
+              </span>
+              <span className="text-[12.5px] text-lo">{g.note}</span>
+            </button>
+            {isOpen && (
+              <ul className="mt-2.5 space-y-1.5">
+                {g.items.map((t) => (
+                  <li key={t} className="flex gap-2.5 text-[13px] leading-snug text-mid">
+                    <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-e-blue" />
+                    <span className="min-w-0">“{t}”</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )
+      })}
     </div>
   )
 }
@@ -363,36 +423,33 @@ export function ReasoningPage() {
             tone="evidence"
             kicker="User evidence"
             title="What Toggl’s users are actually saying"
-            lede="I read the Toggl Community product-feedback board ranked by engagement, plus public reviews on Capterra and G2. Rank matters more than any single thread — it is the closest thing to a vote this data has."
+            lede="I read the Toggl Community product-feedback board, ranked by engagement, plus public reviews on Capterra. Rank matters more than any single thread — it is the closest thing to a vote this data has. Click a group to see the threads in it."
           >
-            <div className="divide-y divide-hairline rounded-xl border border-hairline bg-panel">
-              {COMMUNITY.map((g) => (
-                <div key={g.group} className="px-5 py-3.5">
-                  <div className="flex flex-wrap items-baseline gap-x-2.5">
-                    <span className="font-display text-[13.5px] font-semibold text-hi">
-                      {g.group}
-                    </span>
-                    <span className="tnum font-display text-2xs font-semibold text-e-blue">
-                      {g.items.length} thread{g.items.length > 1 ? 's' : ''}
-                    </span>
-                    <span className="text-[12.5px] text-lo">{g.note}</span>
-                  </div>
-                  <p className="mt-1.5 text-[13px] leading-relaxed text-mid">
-                    {g.items.map((t) => `“${t}”`).join('   ·   ')}
+            <CommunityBoard />
+
+            <Panel eyebrow={`Capterra reviews — ${CAPTERRA_REVIEWS.length} quoted`}>
+              <div className="space-y-2.5">
+                {CAPTERRA_REVIEWS.map((r) => (
+                  <p key={r.who} className="text-[13px] leading-relaxed text-mid">
+                    “{r.quote}” <span className="text-lo">— {r.who}</span>
                   </p>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+              <a
+                href="https://www.capterra.com/p/247745/Toggl/reviews/"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3 inline-flex items-center gap-1 font-display text-2xs font-semibold text-e-blue underline-offset-2 hover:underline"
+              >
+                See the reviews <ExternalLink size={10} />
+              </a>
+            </Panel>
 
             <Panel tone="evidence" eyebrow="Reading it honestly" filled>
               <p>
-                Most engagement sits on regressions — a community defending a habit that changed
-                underneath them, and correct to be loud about it. What the board does{' '}
-                <strong className="text-hi">not</strong> contain is a request for anything like this
-                concept. That absence is information, not permission to ignore it: engagement
-                rewards losing something familiar far more reliably than never being offered
-                something. The one cluster pointing forward is Goals — users asking Toggl to help
-                them steer, not only record.
+                Most of this is people defending a habit that changed under them — that’s fair, and
+                worth listening to. Nobody asked for anything like this concept either. That’s not a
+                reason to ignore it: people rarely ask for something they’ve never been offered.
               </p>
             </Panel>
           </Section>
@@ -934,8 +991,14 @@ export function ReasoningPage() {
                   ],
                   [
                     'evidence',
-                    'Capterra & G2',
-                    'Read for context. No figures drawn from them.',
+                    'Capterra reviews',
+                    'Two quotes in section 02 are taken from it verbatim.',
+                    'https://www.capterra.com/p/247745/Toggl/reviews/',
+                  ],
+                  [
+                    'evidence',
+                    'G2 reviews',
+                    'Attempted — G2 blocks fetching (HTTP 403), so nothing from it is quoted here.',
                     '',
                   ],
                   [
