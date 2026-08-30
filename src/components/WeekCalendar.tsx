@@ -274,6 +274,9 @@ export function WeekCalendar({
   const bodyH = (VIEW_END - VIEW_START) * HOUR_H
 
   // Lane geometry.
+  // Calendar view overlaps the two lanes, but with nothing logged there is no
+  // overlap to make room for, so planned takes the full column.
+  const nothingLogged = entries.length === 0
   const loggedLane =
     mode === 'split'
       ? { left: '0%', width: '50%' }
@@ -286,7 +289,7 @@ export function WeekCalendar({
   const plannedLane =
     mode === 'split'
       ? { left: '50%', width: '50%' }
-      : mode === 'calendar'
+      : mode === 'calendar' && !nothingLogged
         ? { left: '28%', width: '72%' }
         : { left: '0%', width: '100%' }
   const plannedZ = mode === 'calendar' ? 'z-20' : 'z-10'

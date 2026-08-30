@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   AtSign,
   Calendar,
@@ -383,6 +383,15 @@ export function TimerPage() {
   const [split, setSplit] = useState(true)
   const [planAt, setPlanAt] = useState<Date | null>(null)
   const canPlanHere = variant === 'B' && phase === 'schedule'
+
+  /* Split view devotes half of every day to logged time. While you are still
+     scheduling there is none — the work is entirely in the future — so open on
+     the plain calendar and switch to split once tracking gives it something to
+     compare against. Keyed on the phase, so a manual choice still sticks. */
+  useEffect(() => {
+    if (canPlanHere) setSplit(false)
+    else if (phase === 'working') setSplit(true)
+  }, [canPlanHere, phase])
   const days = weekDays(DEMO_NOW)
 
   /* The all-day band shows the tasks themselves across their scheduled dates.

@@ -35,6 +35,7 @@ export function CapacityPanel() {
     commitments,
   } = useDemo()
   const [showConstraints, setShowConstraints] = useState(false)
+  const [showRisk, setShowRisk] = useState(false)
   const days = weekDays(DEMO_NOW)
   const fits = availableHours >= planHours
   const buffer = availableHours - planHours
@@ -107,21 +108,36 @@ export function CapacityPanel() {
             </div>
           </div>
 
-          {/* The honest part: what happens at the bad end of the range. */}
+          {/* The honest part: what happens at the bad end of the range. The
+              headline stays visible — it is the warning — but the reasoning
+              and the remedy fold away like everything else. */}
           {!worstFits && (
-            <div className="mb-6 rounded-xl border border-warn/35 bg-warn-lo px-4 py-3.5">
-              <div className="flex items-start gap-2.5">
+            <div className="mb-6 overflow-hidden rounded-xl border border-warn/35 bg-warn-lo">
+              <button
+                onClick={() => setShowRisk(!showRisk)}
+                className="flex w-full items-start gap-2.5 px-4 py-3 text-left"
+              >
                 <AlertTriangle size={16} className="mt-0.5 shrink-0 text-warn" />
-                <div className="min-w-0">
-                  <div className="font-display text-[14px] font-semibold text-hi">
-                    Your best case fits. Your worst case does not.
-                  </div>
-                  <p className="mt-1 text-[13px] leading-relaxed text-mid">
+                <span className="min-w-0 flex-1 font-display text-[14px] font-semibold text-hi">
+                  Your best case fits. Your worst case does not.
+                </span>
+                <ChevronDown
+                  size={16}
+                  className={clsx(
+                    'mt-0.5 shrink-0 text-warn transition-transform',
+                    showRisk && 'rotate-180',
+                  )}
+                />
+              </button>
+
+              {showRisk && (
+                <div className="animate-fade-in px-4 pb-3.5 pl-[42px]">
+                  <p className="text-[13px] leading-relaxed text-mid">
                     The estimate runs to {formatDuration(worstCase)} at the top of the range, and
                     you only have {formatDuration(availableHours)} — a{' '}
                     {formatDuration(worstShort)} shortfall if this turns out to be one of the
-                    harder ones. With no tracked history yet, Toggl cannot tell you which it will
-                    be.
+                    harder ones. With no tracked history yet, Toggl cannot tell you which it
+                    will be.
                   </p>
                   <div className="mt-3 rounded-lg bg-panel px-3 py-2.5">
                     <div className="eyebrow mb-1">What Toggl suggests</div>
@@ -133,7 +149,7 @@ export function CapacityPanel() {
                     </p>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
 
