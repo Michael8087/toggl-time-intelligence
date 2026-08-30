@@ -28,7 +28,7 @@ const CONTENTS: { id: string; label: string; tone: keyof typeof TONE }[] = [
   { id: 'analysis', label: 'Product analysis', tone: 'analysis' },
   { id: 'prioritization', label: 'Prioritization', tone: 'decision' },
   { id: 'hypothesis', label: 'The bet', tone: 'decision' },
-  { id: 'loops', label: 'The two loops', tone: 'strategy' },
+  { id: 'loops', label: 'Retention', tone: 'strategy' },
   { id: 'measure', label: 'Metrics & risks', tone: 'neutral' },
   { id: 'sources', label: 'Sources', tone: 'neutral' },
 ]
@@ -756,7 +756,7 @@ export function ReasoningPage() {
             id="loops"
             index="07"
             tone="strategy"
-            kicker="The two loops"
+            kicker="Retention"
             title="The estimate gets me in. The living plan gives me a reason to come back."
           >
             <Grid cols={2}>
