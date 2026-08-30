@@ -31,13 +31,12 @@ export default {
         plum: c('--c-plum'), // active nav pill
         'on-plum': c('--c-on-plum'),
 
-        // Entry fills.
-        'e-pink': '#EE5FA0',
-        'e-yellow': '#EFC93F',
-        'e-blue': '#8FC5E8',
-        'e-green': '#6FCB9F',
-        'e-lilac': '#B69BE8',
-        'e-navy': c('--c-e-navy'), // the planned lane in split view
+        // Entry fills — theme-dependent, so never hard-coded here.
+        'e-pink': c('--c-e-pink'),
+        'e-yellow': c('--c-e-yellow'),
+        'e-blue': c('--c-e-blue'),
+        'e-green': c('--c-e-green'),
+        'e-lilac': c('--c-e-lilac'),
         'e-maroon': c('--c-e-maroon'), // all-day task bars
 
         // Semantics
