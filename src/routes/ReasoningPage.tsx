@@ -8,7 +8,6 @@ import {
   Equation,
   Flow,
   Grid,
-  Loop,
   Panel,
   Prose,
   Quote,
@@ -218,7 +217,6 @@ function EffortBadge({ effort }: { effort: Effort }) {
   )
 }
 
-const GROUP_TH = 'px-3 py-1.5 text-center font-display text-2xs font-semibold uppercase tracking-[0.08em]'
 const SUB_TH = 'px-3 py-2 font-display text-2xs font-semibold uppercase tracking-[0.06em] text-lo'
 
 function Matrix() {
@@ -226,19 +224,6 @@ function Matrix() {
     <div className="overflow-x-auto rounded-xl border border-hairline bg-panel">
       <table className="w-full min-w-[920px] border-collapse text-left">
         <thead>
-          <tr className="border-b border-hairline/60">
-            <th className="px-5 py-1.5" />
-            <th colSpan={3} className={clsx(GROUP_TH, 'border-l border-hairline/60 text-pink')}>
-              Strategy
-            </th>
-            <th className={clsx(GROUP_TH, 'border-l border-hairline/60 text-e-lilac')}>
-              Product analysis
-            </th>
-            <th className={clsx(GROUP_TH, 'border-l border-hairline/60 text-e-blue')}>
-              User feedback
-            </th>
-            <th colSpan={3} className="border-l border-hairline/60" />
-          </tr>
           <tr className="border-b border-hairline">
             <th className="px-5 py-2.5 font-display text-2xs font-semibold uppercase tracking-[0.1em] text-lo">
               Opportunity
@@ -763,20 +748,16 @@ export function ReasoningPage() {
                     decision.
                   </p>
                   <p>
-                    <strong className="text-hi">Dashboards & reporting</strong> — retrospective, and
-                    better the more data you already have: backwards for W0.
+                    <strong className="text-hi">Custom dashboards / charts</strong> — retrospective,
+                    and better the more data you already have: backwards for W0.
                   </p>
                   <p>
-                    <strong className="text-hi">Utilization</strong> — a management question wearing
-                    a personal label.
+                    <strong className="text-hi">Personal utilization</strong> — a management
+                    question wearing a personal label.
                   </p>
                   <p>
-                    <strong className="text-hi">Profitability</strong> — hourly, fixed-price and
-                    salaried economics share no metric.
-                  </p>
-                  <p>
-                    <strong className="text-hi">Deeper Copilot</strong> — still leaves the user
-                    responsible for asking.
+                    <strong className="text-hi">Planning workflow improvements</strong> — real
+                    demand, but too diffuse to move the strategic needle on its own.
                   </p>
                 </div>
               </div>
@@ -818,48 +799,11 @@ export function ReasoningPage() {
               </div>
             </div>
 
-            <Panel tone="decision" eyebrow="What a commitment says" filled>
-              <p className="font-display text-[15px] text-hi">
-                “About 10 hours — and you have 12 free before Wednesday 17:00, so it fits.”
-              </p>
-              <p className="mt-2.5 text-[13.5px] text-mid">Now it is a decision.</p>
-            </Panel>
-
             <Equation
               terms={['Estimate', 'Capacity', 'Existing commitments', 'Deadline']}
               result="Realistic commitment"
-              note="Scheduling is not the secondary half of the concept. It is the action layer that makes the intelligence worth having — and, usefully for a first-week constraint, it needs no personal history at all."
+              note="Scheduling is not the secondary half of the concept. It is the action layer that makes the intelligence worth having — and, usefully for a first-week constraint, it needs no personal history at all. When reality changes the commitment, Toggl notices and proposes an adjustment: the same equation, run again."
             />
-
-            <div>
-              <div className="eyebrow mb-3 text-lo">The whole loop, in one</div>
-              <Loop
-                steps={[
-                  { label: 'Task intake', built: true },
-                  { label: 'Intelligent estimate', built: true },
-                  { label: 'Capacity check', built: true },
-                  { label: 'Schedule', built: true },
-                  { label: 'Work' },
-                  { label: 'Reality changes' },
-                  { label: 'Toggl notices', built: true },
-                  { label: 'Suggested adjustment', built: true },
-                  { label: 'Accept or edit', built: true },
-                  { label: 'Complete' },
-                  { label: 'Learn' },
-                ]}
-                caption="and again — within the week, and with every new task"
-              />
-              <div className="mt-3.5 flex flex-wrap items-center gap-x-5 gap-y-2 text-2xs text-lo">
-                <span className="flex items-center gap-2">
-                  <span className="h-2.5 w-2.5 rounded-sm border border-pink/45 bg-pink-lo" />
-                  Built in the prototype
-                </span>
-                <span className="flex items-center gap-2">
-                  <span className="h-2.5 w-2.5 rounded-sm border border-hairline-2 bg-panel" />
-                  Closed by Toggl as it already is
-                </span>
-              </div>
-            </div>
           </Section>
 
           {/* 07 — The two loops */}
