@@ -138,9 +138,6 @@ const CANDIDATES: Candidate[] = [
   { name: 'Goal updates & limits', scores: ['med', 'med', 'med', 'med', 'low', 'med'], verdict: 'later' },
   { name: 'Custom dashboards / charts', scores: ['med', 'low', 'low', 'low', 'low', 'med'], verdict: 'no' },
   { name: 'Personal utilization', scores: ['low', 'low', 'med', 'med', 'med', 'med'], verdict: 'no' },
-  { name: 'Personal profitability', scores: ['med', 'low', 'low', 'med', 'med', 'med'], verdict: 'no' },
-  { name: 'More reporting depth', scores: ['med', 'low', 'med', 'low', 'med', 'high'], verdict: 'no' },
-  { name: 'Deeper AI Copilot answers', scores: ['med', 'med', 'low', 'med', 'med', 'high'], verdict: 'no' },
 ]
 
 function Matrix() {
