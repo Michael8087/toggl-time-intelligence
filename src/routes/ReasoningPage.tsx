@@ -663,7 +663,7 @@ export function ReasoningPage() {
             </Panel>
 
             <Assertion>
-              The opportunity was never to make the AI answer more questions. It was to stop
+              The opportunity is not to make the AI answer more questions. It is to stop
               requiring the question.
             </Assertion>
           </Section>
