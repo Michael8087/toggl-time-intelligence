@@ -24,7 +24,7 @@ import {
   Palmtree,
   Star,
 } from 'lucide-react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import { USER } from '../data/demo'
 import { useDemo } from '../state/DemoContext'
@@ -252,6 +252,7 @@ function Sidebar() {
 /** Sits above the content: the case-study controls, kept out of the product chrome. */
 function DemoBar() {
   const { showNotes, toggleNotes, reset, variant, setVariant } = useDemo()
+  const navigate = useNavigate()
 
   return (
     <div className="flex h-9 shrink-0 items-center gap-2 border-b border-hairline bg-surface px-4">
@@ -273,7 +274,10 @@ function DemoBar() {
           ).map(([v, label]) => (
             <button
               key={v}
-              onClick={() => setVariant(v)}
+              onClick={() => {
+                setVariant(v)
+                navigate('/tasks')
+              }}
               title={`Variant ${v} — ${label}`}
               className={clsx(
                 'rounded-pill px-2 py-0.5 font-display text-[11px] font-semibold transition-colors',
@@ -304,7 +308,10 @@ function DemoBar() {
           Case-study notes
         </button>
         <button
-          onClick={reset}
+          onClick={() => {
+            reset()
+            navigate('/tasks')
+          }}
           className="inline-flex h-6 items-center gap-1.5 rounded-pill px-2.5 font-display text-[11px] font-semibold text-mid transition-colors hover:bg-panel-2 hover:text-hi"
         >
           <RotateCcw size={11} />

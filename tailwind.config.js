@@ -65,6 +65,11 @@ export default {
           to: { opacity: '1', transform: 'none' },
         },
         'fade-in': { from: { opacity: '0' }, to: { opacity: '1' } },
+        // Draws the eye to an optional next move without demanding it.
+        nudge: {
+          '0%, 100%': { boxShadow: '0 0 0 0 rgb(var(--c-pink) / 0.5)' },
+          '70%': { boxShadow: '0 0 0 9px rgb(var(--c-pink) / 0)' },
+        },
         'pulse-ring': {
           '0%': { transform: 'scale(0.9)', opacity: '0.7' },
           '70%': { transform: 'scale(1.7)', opacity: '0' },
@@ -75,6 +80,7 @@ export default {
         'fade-up': 'fade-up 0.32s cubic-bezier(0.22,1,0.36,1) both',
         'fade-in': 'fade-in 0.24s ease-out both',
         'pulse-ring': 'pulse-ring 1.8s ease-out infinite',
+        nudge: 'nudge 2.2s ease-out infinite',
       },
     },
   },

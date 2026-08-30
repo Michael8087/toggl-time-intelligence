@@ -148,17 +148,38 @@ export function PlanAdjustedNotice() {
  * mechanism reads as general rather than as a "you are behind" alarm.
  */
 export function ChangeTrigger() {
-  const { raiseChange, activeChange, appliedChanges, slots, trackedHours } = useDemo()
+  const { raiseChange, activeChange, appliedChanges, slots, trackedHours, phase, simRunning, simDone } =
+    useDemo()
   if (!slots.length || activeChange) return null
 
   const remaining = PLAN_CHANGES.filter((c) => !appliedChanges.includes(c.id))
   if (!remaining.length) return null
 
+  /* The clock has stopped part-way through the week — the moment where a
+     divergence would actually land. Draw the eye, but say it is optional:
+     the run continues perfectly well without one. */
+  const waiting = phase === 'working' && !simRunning && !simDone && trackedHours > 0
+
   return (
-    <div className="flex flex-wrap items-center gap-2 border-b border-hairline bg-panel px-5 py-2">
-      <span className="font-display text-2xs font-semibold uppercase tracking-[0.1em] text-lo">
+    <div
+      className={clsx(
+        'flex flex-wrap items-center gap-2 border-b border-hairline px-5 py-2 transition-colors',
+        waiting ? 'animate-nudge bg-pink-lo' : 'bg-panel',
+      )}
+    >
+      <span
+        className={clsx(
+          'font-display text-2xs font-semibold uppercase tracking-[0.1em]',
+          waiting ? 'text-pink' : 'text-lo',
+        )}
+      >
         Simulate a change
       </span>
+      {waiting && (
+        <span className="rounded-pill border border-pink/40 px-2 py-0.5 font-display text-2xs font-semibold text-pink">
+          optional
+        </span>
+      )}
       {remaining.map((c) => (
         <button
           key={c.id}
@@ -178,8 +199,10 @@ export function ChangeTrigger() {
           {c.option}
         </button>
       ))}
-      <span className="text-2xs text-lo">
-        · each is a different signal, not the same alarm
+      <span className={clsx('text-2xs', waiting ? 'text-mid' : 'text-lo')}>
+        {waiting
+          ? '· try one, or just carry on — the week runs either way'
+          : '· each is a different signal, not the same alarm'}
       </span>
     </div>
   )
