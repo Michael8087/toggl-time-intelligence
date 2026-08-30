@@ -171,7 +171,7 @@ const CANDIDATES: Candidate[] = [
   },
   {
     name: 'Goal updates',
-    strategy: ['med', 'low', 'med'],
+    strategy: ['low', 'low', 'med'],
     feasibility: 'med',
     feedback: 'high',
     effort: 'S',
