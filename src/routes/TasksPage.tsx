@@ -110,9 +110,14 @@ function Row({ task, onOpen }: { task: Task; onOpen: () => void }) {
       <td className="py-3 pr-4">
         <div className="flex flex-wrap items-center gap-2">
           <span
+            key={unplanned ? 'lit' : 'idle'}
             className={clsx(
               'font-display text-[14px]',
-              isHero ? 'font-semibold text-hi' : 'text-hi',
+              unplanned
+                ? 'animate-blink font-semibold text-pink'
+                : isHero
+                  ? 'font-semibold text-hi'
+                  : 'text-hi',
             )}
           >
             {task.title}

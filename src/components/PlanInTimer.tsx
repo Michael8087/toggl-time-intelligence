@@ -79,7 +79,7 @@ export function PlanInTimer() {
           {!done && (
             <Button size="sm" variant={canConfirm ? 'ghost' : 'primary'} onClick={generateSchedule}>
               <Wand2 size={14} />
-              {canConfirm ? 'Let Toggl finish it' : 'Let Toggl place it'}
+              {canConfirm ? 'Let AI schedule the rest' : 'Let AI schedule it'}
             </Button>
           )}
           {slots.length > 0 && (

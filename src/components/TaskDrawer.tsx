@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
   ArrowRight,
@@ -83,19 +83,28 @@ function Section({
   onToggle,
   action,
   children,
+  highlight,
+  innerRef,
 }: {
   title: string
   open: boolean
   onToggle: () => void
   action?: ReactNode
   children?: ReactNode
+  /** Blink the disclosure while something worth opening is waiting inside. */
+  highlight?: boolean
+  innerRef?: React.Ref<HTMLDivElement>
 }) {
   return (
-    <div className="border-t border-hairline">
+    <div ref={innerRef} className="border-t border-hairline">
       <div className="flex items-center gap-2 px-6 py-3.5">
         <button
           onClick={onToggle}
-          className="flex items-center gap-2 font-display text-[15px] font-semibold text-hi"
+          key={highlight ? 'lit' : 'idle'}
+          className={clsx(
+            'flex items-center gap-2 font-display text-[15px] font-semibold',
+            highlight ? 'animate-blink text-pink' : 'text-hi',
+          )}
         >
           {open ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
           {title}
@@ -339,7 +348,7 @@ function TimeSection() {
             <Sparkles size={16} className="mt-0.5 shrink-0 text-pink" />
             <div className="min-w-0 flex-1">
               <div className="font-display text-[14px] font-semibold text-hi">
-                Toggl can plan this task
+                Toggl can schedule this task
               </div>
               <p className="mt-0.5 text-[13px] leading-relaxed text-mid">
                 Around{' '}
@@ -351,7 +360,7 @@ function TimeSection() {
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 <Button size="sm" onClick={() => setPhase('estimate')}>
-                  Plan this task
+                  Let AI schedule it
                 </Button>
                 <Button size="sm" variant="quiet" onClick={() => setPhase('estimate')}>
                   Show reasoning
@@ -466,10 +475,10 @@ export function TaskDrawer() {
     useDemo()
   const [openSections, setOpenSections] = useState({
     subtasks: false,
-    dependencies: true,
     allocation: false,
-    time: true,
+    time: false,
   })
+  const timeRef = useRef<HTMLDivElement>(null)
   const [moreProps, setMoreProps] = useState(false)
   const [billable, setBillable] = useState(true)
 
@@ -684,8 +693,20 @@ export function TaskDrawer() {
 
         <Section
           title="Time"
+          innerRef={timeRef}
+          highlight={!openSections.time && phase === 'intake'}
           open={openSections.time}
-          onToggle={() => toggle('time')}
+          onToggle={() => {
+            const opening = !openSections.time
+            toggle('time')
+            // Bring the proposal into view rather than leaving it below the fold.
+            if (opening) {
+              setTimeout(
+                () => timeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+                60,
+              )
+            }
+          }}
           action={
             <span className="inline-flex items-center gap-1.5 text-[13px] text-mid">
               <span className="grid h-4 w-4 place-items-center rounded-full bg-panel-3 text-[9px] font-bold">
