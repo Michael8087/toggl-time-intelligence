@@ -470,37 +470,41 @@ export function ReasoningPage() {
               do with them.”
             </Quote>
 
-            <Grid cols={2}>
-              <Panel tone="strategy" eyebrow="The shift, in Toggl’s framing" filled>
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-lg bg-panel px-3 py-1.5 font-display text-[13px] font-semibold text-mid">
+            <div className="grid gap-6 sm:grid-cols-2">
+              <div>
+                <div className="eyebrow text-pink">The shift, in Toggl’s framing</div>
+                <div className="mt-2.5 flex flex-wrap items-center gap-2">
+                  <span className="rounded-lg bg-panel-2 px-3 py-1.5 font-display text-[13px] font-semibold text-mid">
                     “where did our time go?”
                   </span>
                   <span className="font-display text-[15px] text-pink">→</span>
-                  <span className="rounded-lg bg-panel px-3 py-1.5 font-display text-[13px] font-semibold text-hi">
+                  <span className="rounded-lg bg-panel-2 px-3 py-1.5 font-display text-[13px] font-semibold text-hi">
                     “what should we do next?”
                   </span>
                 </div>
-                <p className="mt-3.5 text-[13.5px] leading-relaxed text-mid">
+                <p className="mt-3 text-[13.5px] leading-relaxed text-mid">
                   2.0 is described as the direction itself — roadmap, investment and brand — rather
                   than a release.
                 </p>
-              </Panel>
-              <Panel eyebrow="The questions it names">
-                <Bullets
-                  tone="strategy"
-                  items={[
-                    'Do we have the capacity to take this on?',
-                    'Are we making money on work we already said yes to?',
-                    'What is the right resourcing decision?',
-                    'What should we take on next?',
-                  ]}
-                />
+              </div>
+              <div>
+                <div className="eyebrow text-lo">The questions it names</div>
+                <div className="mt-2.5">
+                  <Bullets
+                    tone="strategy"
+                    items={[
+                      'Do we have the capacity to take this on?',
+                      'Are we making money on work we already said yes to?',
+                      'What is the right resourcing decision?',
+                      'What should we take on next?',
+                    ]}
+                  />
+                </div>
                 <p className="mt-2.5 text-[13px] leading-relaxed text-lo">
                   Three of four are asked in the plural, by someone running a team.
                 </p>
-              </Panel>
-            </Grid>
+              </div>
+            </div>
 
             <Assertion label="My interpretation — not Toggl’s claim">
               For an individual contributor, “do we have the capacity to take this on?” becomes: can
@@ -544,25 +548,18 @@ export function ReasoningPage() {
             index="04"
             tone="analysis"
             kicker="Product analysis"
-            title="Toggl is not missing the pieces. It is missing the sequence."
+            title="Toggl is missing the sequence"
             lede="I went through the product first: Timer in all four views — Calendar, Split View, Time Log, Timesheet — plus Analyze and Reports, Projects, Timeline, the AI Copilot, the planning fields, planned versus actual, alerts, tasks and projects."
           >
-            <Grid cols={2}>
-              <Panel eyebrow="What I expected to conclude">
-                <p className="text-hi">“Toggl is missing planning, reporting or AI.”</p>
-                <p className="mt-2.5 text-[13.5px] leading-relaxed text-lo">
-                  It is not. Split view already draws logged time on the left of each day and
-                  planned on the right — a vocabulary for plan versus actual it has had for years.
-                </p>
-              </Panel>
-              <Panel tone="analysis" eyebrow="What I actually found" filled>
-                <p className="text-hi">The intelligence is fragmented, and it waits to be asked.</p>
-                <p className="mt-2.5 text-[13.5px] leading-relaxed text-mid">
-                  Copilot can already answer a question about an estimate. The user has to know it
-                  exists, ask it, then act on the answer somewhere else.
-                </p>
-              </Panel>
-            </Grid>
+            <Panel tone="analysis" eyebrow="What I actually found" filled>
+              <p className="text-hi">The intelligence is fragmented, and it waits to be asked.</p>
+              <p className="mt-2.5 text-[13.5px] leading-relaxed text-mid">
+                Split view already draws logged time on the left of each day and planned on the
+                right — a vocabulary for plan versus actual it has had for years. Copilot can
+                already answer a question about an estimate. What is missing is not a piece; it is
+                the user having to know it exists, ask it, then act on the answer somewhere else.
+              </p>
+            </Panel>
 
             <Panel tone="analysis" eyebrow="The specific gap" filled>
               <p>
