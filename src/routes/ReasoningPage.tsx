@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, type RefObject } from 'react'
+import { Fragment, useEffect, useRef, useState, type RefObject } from 'react'
 import clsx from 'clsx'
-import { ArrowUpRight, ChevronDown, ExternalLink } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, ChevronDown, ExternalLink } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import {
   Assertion,
@@ -717,21 +717,25 @@ export function ReasoningPage() {
                 that estimate into a realistic schedule, an individual contributor can make better
                 commitments with less cognitive effort.
               </p>
+              <div className="mt-5 flex flex-wrap items-start gap-x-3 gap-y-4 border-t border-pink/25 pt-5">
+                {[
+                  ['Proactive', 'Arrives with the task'],
+                  ['Contextual', 'Knows the week and the deadline'],
+                  ['Embedded', 'On the task panel and calendar'],
+                  ['Actionable', 'Ends in a block, not an answer'],
+                ].map(([k, v], i, arr) => (
+                  <Fragment key={k}>
+                    <div className="min-w-[130px] max-w-[160px]">
+                      <div className="font-display text-[13.5px] font-bold text-pink-hi">{k}</div>
+                      <div className="mt-1 text-[13px] leading-snug text-mid">{v}</div>
+                    </div>
+                    {i < arr.length - 1 && (
+                      <ArrowRight size={14} className="mt-1 shrink-0 text-pink/50" />
+                    )}
+                  </Fragment>
+                ))}
+              </div>
             </div>
-
-            <Grid cols={4}>
-              {[
-                ['Proactive', 'Arrives with the task'],
-                ['Contextual', 'Knows the week and the deadline'],
-                ['Embedded', 'On the task panel and calendar'],
-                ['Actionable', 'Ends in a block, not an answer'],
-              ].map(([k, v]) => (
-                <div key={k} className="rounded-xl border border-pink/35 bg-pink-lo/50 p-4">
-                  <div className="font-display text-[13.5px] font-bold text-pink-hi">{k}</div>
-                  <div className="mt-1.5 text-[13px] leading-snug text-mid">{v}</div>
-                </div>
-              ))}
-            </Grid>
 
             <Grid cols={2}>
               <Panel eyebrow="What an estimate says">
