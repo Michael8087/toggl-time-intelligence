@@ -271,14 +271,21 @@ export function Equation({
 }
 
 /** The recurring loop: a chain that visibly returns to its own start. */
-export function Loop({ steps, caption }: { steps: string[]; caption: string }) {
+export function Loop({ steps, caption }: { steps: FlowStep[]; caption: string }) {
   return (
     <div className="rounded-xl border border-hairline bg-panel p-5">
       <div className="flex flex-wrap items-center gap-x-1.5 gap-y-2">
         {steps.map((s, i) => (
-          <div key={s} className="flex items-center gap-1.5">
-            <span className="inline-flex items-center rounded-pill bg-panel-2 px-3 py-1.5 font-display text-[12.5px] font-semibold text-hi">
-              {s}
+          <div key={s.label} className="flex items-center gap-1.5">
+            <span
+              className={clsx(
+                'inline-flex items-center rounded-pill border px-3 py-1.5 font-display text-[12.5px] font-semibold',
+                s.built
+                  ? 'border-pink/45 bg-pink-lo text-pink-hi'
+                  : 'border-hairline-2 bg-panel text-mid',
+              )}
+            >
+              {s.label}
             </span>
             {i < steps.length - 1 && <ArrowRight size={13} className="shrink-0 text-dim" />}
           </div>

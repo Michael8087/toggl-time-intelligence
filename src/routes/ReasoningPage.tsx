@@ -626,15 +626,6 @@ export function ReasoningPage() {
                 <span className="text-hi">“do we have the capacity to take this on?”</span>{' '}
                 becomes: can I realistically commit to this work, and when can I actually do it?
               </p>
-              <div className="mt-4">
-                <Flow
-                  steps={[
-                    { label: 'Time data' },
-                    { label: 'Planning', built: true },
-                    { label: 'Commitment', built: true },
-                  ]}
-                />
-              </div>
             </Panel>
           </Section>
 
@@ -827,20 +818,12 @@ export function ReasoningPage() {
               </div>
             </div>
 
-            <Grid cols={2}>
-              <Panel eyebrow="What an estimate says">
-                <p className="font-display text-[15px] text-hi">
-                  “This task will take about 10 hours.”
-                </p>
-                <p className="mt-2.5 text-[13.5px] text-lo">Useful. Not yet actionable.</p>
-              </Panel>
-              <Panel tone="decision" eyebrow="What a commitment says" filled>
-                <p className="font-display text-[15px] text-hi">
-                  “About 10 hours — and you have 12 free before Wednesday 17:00, so it fits.”
-                </p>
-                <p className="mt-2.5 text-[13.5px] text-mid">Now it is a decision.</p>
-              </Panel>
-            </Grid>
+            <Panel tone="decision" eyebrow="What a commitment says" filled>
+              <p className="font-display text-[15px] text-hi">
+                “About 10 hours — and you have 12 free before Wednesday 17:00, so it fits.”
+              </p>
+              <p className="mt-2.5 text-[13.5px] text-mid">Now it is a decision.</p>
+            </Panel>
 
             <Equation
               terms={['Estimate', 'Capacity', 'Existing commitments', 'Deadline']}
@@ -848,8 +831,9 @@ export function ReasoningPage() {
               note="Scheduling is not the secondary half of the concept. It is the action layer that makes the intelligence worth having — and, usefully for a first-week constraint, it needs no personal history at all."
             />
 
-            <Panel eyebrow="Where it sits in the whole loop">
-              <Flow
+            <div>
+              <div className="eyebrow mb-3 text-lo">The whole loop, in one</div>
+              <Loop
                 steps={[
                   { label: 'Task intake', built: true },
                   { label: 'Intelligent estimate', built: true },
@@ -857,22 +841,25 @@ export function ReasoningPage() {
                   { label: 'Schedule', built: true },
                   { label: 'Work' },
                   { label: 'Reality changes' },
-                  { label: 'Adjust plan', built: true },
+                  { label: 'Toggl notices', built: true },
+                  { label: 'Suggested adjustment', built: true },
+                  { label: 'Accept or edit', built: true },
                   { label: 'Complete' },
                   { label: 'Learn' },
                 ]}
+                caption="and again — within the week, and with every new task"
               />
               <div className="mt-3.5 flex flex-wrap items-center gap-x-5 gap-y-2 text-2xs text-lo">
                 <span className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-sm border border-pink/45 bg-pink-lo" />
-                  Built in the prototype — the four steps where nothing exists today
+                  Built in the prototype
                 </span>
                 <span className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-sm border border-hairline-2 bg-panel" />
                   Closed by Toggl as it already is
                 </span>
               </div>
-            </Panel>
+            </div>
           </Section>
 
           {/* 07 — The two loops */}
@@ -897,18 +884,6 @@ export function ReasoningPage() {
                 </p>
               </Panel>
             </Grid>
-
-            <Loop
-              steps={[
-                'Plan',
-                'Work',
-                'Reality changes',
-                'Toggl notices',
-                'Suggested adjustment',
-                'Accept or edit',
-              ]}
-              caption="and again, every time the week moves"
-            />
 
             <Panel eyebrow="What can make a plan untrue">
               <Bullets
