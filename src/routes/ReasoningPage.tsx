@@ -364,7 +364,7 @@ export function ReasoningPage() {
             id="brief"
             index="01"
             kicker="The brief"
-            title="One question, asked under a first-week constraint"
+            title="Improve the product for individual contributors"
             lede="Improve the experience of an individual contributor, freelancer or contractor, with particular attention to W0 retention. That second half does the work: it rules out every concept whose payoff comes later than that."
           >
             <Assertion label="The question I set myself">
