@@ -108,7 +108,7 @@ const COMMUNITY: { group: string; note: string; items: string[] }[] = [
   },
   {
     group: 'Forward-looking control',
-    note: 'The one cluster asking about the future rather than the past.',
+    note: 'The one cluster asking about the future, not the past — all three acknowledged by Toggl staff and forwarded to product; none shipped a year on.',
     items: ['Feedback on Goals', 'Limited to 4 Goals', 'Goals for specific clients'],
   },
   { group: 'Everyday gaps', note: 'Small, concrete, cheap.', items: ['Add notes to time entries'] },
@@ -116,41 +116,141 @@ const COMMUNITY: { group: string; note: string; items: string[] }[] = [
 
 /* --------------------------------------------------------------- The matrix */
 
-const DIMENSIONS = ['IC value', 'W0 immediacy', 'Toggl 2.0 fit', 'Data advantage', 'Uses what exists']
+/**
+ * Three lenses, three column groups. Strategy is the brief's own
+ * requirements — IC value, the W0 constraint, fit with Toggl's stated
+ * direction. Product analysis collapses to one measure, Feasibility: a
+ * blend of data advantage and how much of this already exists in the
+ * product, since both answer the same question — can this be built well.
+ * User feedback is community demand, read off the board in section 02.
+ *
+ * Effort is a T-shirt size, not a dot rating, because it isn't a quality
+ * judgement the way the others are — it is a cost. Score sums the four
+ * quality columns (high/med/low → 3/2/1) and divides by effort (S/M/L →
+ * 1/2/3): a plain value-over-cost index, computed from the ratings, not a
+ * separate opinion.
+ */
+const SCORE: Record<Level, number> = { high: 3, med: 2, low: 1 }
+
+type Effort = 'S' | 'M' | 'L'
+const EFFORT_VALUE: Record<Effort, number> = { S: 1, M: 2, L: 3 }
+const EFFORT_LABEL: Record<Effort, string> = { S: 'Small', M: 'Medium', L: 'Large' }
 
 interface Candidate {
   name: string
-  scores: Level[]
+  /** IC value, W0 immediacy, Toggl 2.0 fit */
+  strategy: [Level, Level, Level]
+  feasibility: Level
+  feedback: Level
+  effort: Effort
   verdict: 'build' | 'later' | 'no'
 }
 
 const CANDIDATES: Candidate[] = [
-  { name: 'Intelligent estimation', scores: ['high', 'high', 'high', 'high', 'med'], verdict: 'build' },
-  { name: 'Intelligent scheduling', scores: ['high', 'high', 'high', 'med', 'high'], verdict: 'build' },
-  { name: 'Adaptive replanning', scores: ['high', 'med', 'high', 'high', 'high'], verdict: 'build' },
-  { name: 'Goal updates & limits', scores: ['med', 'med', 'med', 'low', 'med'], verdict: 'later' },
-  { name: 'Custom dashboards / charts', scores: ['med', 'low', 'low', 'low', 'med'], verdict: 'no' },
-  { name: 'Personal utilization', scores: ['low', 'low', 'med', 'med', 'med'], verdict: 'no' },
+  {
+    name: 'Intelligent estimation',
+    strategy: ['high', 'high', 'high'],
+    feasibility: 'high',
+    feedback: 'low',
+    effort: 'M',
+    verdict: 'build',
+  },
+  {
+    name: 'Intelligent scheduling',
+    strategy: ['high', 'high', 'high'],
+    feasibility: 'high',
+    feedback: 'low',
+    effort: 'M',
+    verdict: 'build',
+  },
+  {
+    name: 'Adaptive replanning',
+    strategy: ['high', 'med', 'high'],
+    feasibility: 'high',
+    feedback: 'low',
+    effort: 'L',
+    verdict: 'build',
+  },
+  {
+    name: 'Goal updates',
+    strategy: ['med', 'low', 'med'],
+    feasibility: 'med',
+    feedback: 'high',
+    effort: 'S',
+    verdict: 'later',
+  },
+  {
+    name: 'Custom dashboards / charts',
+    strategy: ['med', 'low', 'low'],
+    feasibility: 'med',
+    feedback: 'med',
+    effort: 'L',
+    verdict: 'no',
+  },
+  {
+    name: 'Personal utilization',
+    strategy: ['med', 'low', 'med'],
+    feasibility: 'med',
+    feedback: 'low',
+    effort: 'S',
+    verdict: 'no',
+  },
+  {
+    name: 'Planning workflow improvements',
+    strategy: ['med', 'low', 'low'],
+    feasibility: 'med',
+    feedback: 'high',
+    effort: 'L',
+    verdict: 'no',
+  },
 ]
+
+function score(c: Candidate): number {
+  const sum = c.strategy.reduce((acc, s) => acc + SCORE[s], 0) + SCORE[c.feasibility] + SCORE[c.feedback]
+  return sum / EFFORT_VALUE[c.effort]
+}
+
+function EffortBadge({ effort }: { effort: Effort }) {
+  return (
+    <span className="inline-flex rounded-pill bg-panel-2 px-2.5 py-1 font-display text-2xs font-semibold text-mid">
+      {EFFORT_LABEL[effort]}
+    </span>
+  )
+}
+
+const GROUP_TH = 'px-3 py-1.5 text-center font-display text-2xs font-semibold uppercase tracking-[0.08em]'
+const SUB_TH = 'px-3 py-2 font-display text-2xs font-semibold uppercase tracking-[0.06em] text-lo'
 
 function Matrix() {
   return (
     <div className="overflow-x-auto rounded-xl border border-hairline bg-panel">
-      <table className="w-full min-w-[720px] border-collapse text-left">
+      <table className="w-full min-w-[920px] border-collapse text-left">
         <thead>
+          <tr className="border-b border-hairline/60">
+            <th className="px-5 py-1.5" />
+            <th colSpan={3} className={clsx(GROUP_TH, 'border-l border-hairline/60 text-pink')}>
+              Strategy
+            </th>
+            <th className={clsx(GROUP_TH, 'border-l border-hairline/60 text-e-lilac')}>
+              Product analysis
+            </th>
+            <th className={clsx(GROUP_TH, 'border-l border-hairline/60 text-e-blue')}>
+              User feedback
+            </th>
+            <th colSpan={3} className="border-l border-hairline/60" />
+          </tr>
           <tr className="border-b border-hairline">
             <th className="px-5 py-2.5 font-display text-2xs font-semibold uppercase tracking-[0.1em] text-lo">
               Opportunity
             </th>
-            {DIMENSIONS.map((d) => (
-              <th
-                key={d}
-                className="px-3 py-3 font-display text-2xs font-semibold uppercase tracking-[0.06em] text-lo"
-              >
-                {d}
-              </th>
-            ))}
-            <th className="px-5 py-3 text-right font-display text-2xs font-semibold uppercase tracking-[0.1em] text-lo">
+            <th className={clsx(SUB_TH, 'border-l border-hairline/40')}>IC value</th>
+            <th className={SUB_TH}>W0 immediacy</th>
+            <th className={SUB_TH}>Toggl 2.0 fit</th>
+            <th className={clsx(SUB_TH, 'border-l border-hairline/40')}>Feasibility</th>
+            <th className={clsx(SUB_TH, 'border-l border-hairline/40')}>Community demand</th>
+            <th className={clsx(SUB_TH, 'border-l border-hairline/40 text-center')}>Effort</th>
+            <th className={clsx(SUB_TH, 'text-center')}>Score</th>
+            <th className="px-5 py-2.5 text-right font-display text-2xs font-semibold uppercase tracking-[0.1em] text-lo">
               Call
             </th>
           </tr>
@@ -167,11 +267,29 @@ function Matrix() {
               <td className="px-5 py-2.5 font-display text-[13.5px] font-semibold text-hi">
                 {c.name}
               </td>
-              {c.scores.map((s, i) => (
-                <td key={i} className="px-3 py-2.5">
-                  <Rating level={s} />
-                </td>
-              ))}
+              <td className="border-l border-hairline/40 px-3 py-2.5">
+                <Rating level={c.strategy[0]} />
+              </td>
+              <td className="px-3 py-2.5">
+                <Rating level={c.strategy[1]} />
+              </td>
+              <td className="px-3 py-2.5">
+                <Rating level={c.strategy[2]} />
+              </td>
+              <td className="border-l border-hairline/40 px-3 py-2.5">
+                <Rating level={c.feasibility} />
+              </td>
+              <td className="border-l border-hairline/40 px-3 py-2.5">
+                <Rating level={c.feedback} />
+              </td>
+              <td className="border-l border-hairline/40 px-3 py-2.5 text-center">
+                <EffortBadge effort={c.effort} />
+              </td>
+              <td className="px-3 py-2.5 text-center">
+                <span className="tnum font-display text-[13.5px] font-bold text-hi">
+                  {score(c).toFixed(1)}
+                </span>
+              </td>
               <td className="px-5 py-2.5 text-right">
                 <Verdict kind={c.verdict} />
               </td>
@@ -607,8 +725,26 @@ export function ReasoningPage() {
               <span className="flex items-center gap-2">
                 <Rating level="low" /> Low
               </span>
-              <span className="ml-auto">My judgement, not measurements</span>
+              <span className="ml-auto">
+                Ratings are my judgement; Score sums them and divides by Effort — arithmetic on
+                top of a judgement, not a measurement of its own
+              </span>
             </div>
+
+            <Panel tone="decision" eyebrow="Reading the score honestly" filled>
+              <p>
+                Goal updates scores highest at 10.0, and Personal utilization beats all three bets
+                at 8.0 — both cheap, and Goal updates has real, sustained community demand behind
+                it. That is not a bug in the formula. A plain value-over-effort score will always
+                reward the cheap, well-liked item over a harder, unrequested one.
+              </p>
+              <p className="mt-2.5 font-display text-[15px] font-medium text-hi">
+                I am overriding the score here. Estimation, scheduling and replanning are being
+                judged on strategic fit and the data advantage nothing else in this table can
+                touch — not on throughput. A score is an input to prioritization, not a
+                substitute for it.
+              </p>
+            </Panel>
 
             <div className="grid gap-x-8 gap-y-4 rounded-xl border border-hairline bg-panel p-[18px] sm:grid-cols-2">
               <div>
