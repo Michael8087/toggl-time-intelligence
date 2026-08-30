@@ -305,7 +305,7 @@ export function ReasoningPage() {
             index="01"
             kicker="The brief"
             title="One question, asked under a first-week constraint"
-            lede="Improve the experience of an individual contributor, freelancer or contractor, with particular attention to W0 retention. That second half does the work: it rules out every concept whose payoff arrives in month three."
+            lede="Improve the experience of an individual contributor, freelancer or contractor, with particular attention to W0 retention. That second half does the work: it rules out every concept whose payoff comes later than that."
           >
             <Assertion label="The question I set myself">
               How might Toggl make an individual feel immediate value from its time intelligence, so
