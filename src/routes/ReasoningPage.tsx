@@ -313,7 +313,7 @@ export function ReasoningPage() {
             </Assertion>
 
             <Grid cols={2}>
-              <Panel tone="analysis" eyebrow="The persona, and what they ask" filled>
+              <Panel tone="analysis" eyebrow="The persona" filled>
                 <p className="mb-2.5 text-[13.5px] text-hi">
                   An engineer contracting on a client project — not a manager with a team.
                 </p>
@@ -328,7 +328,7 @@ export function ReasoningPage() {
                   ]}
                 />
               </Panel>
-              <Panel eyebrow="Legitimate in Toggl — not this persona’s job">
+              <Panel eyebrow="Not this persona">
                 <Bullets
                   items={[
                     'Team utilization and resource allocation',
@@ -348,16 +348,12 @@ export function ReasoningPage() {
               </Panel>
             </Grid>
 
-            <Panel tone="decision" eyebrow="The job, and the problem" filled>
-              <p className="font-display text-[15px] font-medium text-hi">
-                The job to be done: make a realistic commitment to work.
-              </p>
-              <p className="mt-2.5">
-                Toggl solved tracking. What is unsolved is that committing to work still runs on
-                guesswork, while Toggl already holds the record of what that same work took. The
-                opportunity is to spend what it knows <em>before</em> the work happens.
-              </p>
-            </Panel>
+            <Assertion label="The job to be done">
+              Make a realistic commitment to work. Toggl solved tracking; what is unsolved is that
+              committing to work still runs on guesswork, while Toggl already holds the record of
+              what that same work took. The opportunity is to spend what it knows{' '}
+              <em>before</em> the work happens.
+            </Assertion>
           </Section>
 
           {/* 02 — Evidence */}
