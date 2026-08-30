@@ -52,7 +52,7 @@ interface DragState {
 export interface WeekCalendarProps {
   days: Date[]
   commitments?: Commitment[]
-  /** Free capacity to hatch in — shown during the capacity check. */
+  /** Free capacity, drawn in behind the entries during the capacity check. */
   windows?: Interval[]
   slots?: PlannedSlot[]
   entries?: TimeEntry[]
@@ -61,7 +61,7 @@ export interface WeekCalendarProps {
   now?: Date
   /**
    * 'split'    — logged left, planned right, as Toggl 2.0's split view does.
-   * 'calendar' — logged dominant, planned as a ribbon.
+   * 'calendar' — the two overlap, offset, with planned on top.
    * 'plan'     — planning only, so planned takes the whole column.
    */
   mode?: 'split' | 'calendar' | 'plan'
@@ -96,14 +96,18 @@ export function WeekCalendar({
     mode === 'split'
       ? { left: '0%', width: '50%' }
       : mode === 'calendar'
-        ? { left: '0%', width: '68%' }
+        ? { left: '0%', width: '72%' }
         : { left: '0%', width: '100%' }
+  // Calendar view stacks the two as overlapping events, offset to the right,
+  // with planned drawn over logged — the way the real app renders a task that
+  // was both planned and tracked. Split view puts them in their own lanes.
   const plannedLane =
     mode === 'split'
       ? { left: '50%', width: '50%' }
       : mode === 'calendar'
-        ? { left: '68%', width: '32%' }
+        ? { left: '28%', width: '72%' }
         : { left: '0%', width: '100%' }
+  const plannedZ = mode === 'calendar' ? 'z-20' : 'z-10'
 
   const colWidth = () => {
     const el = gridRef.current
@@ -219,9 +223,14 @@ export function WeekCalendar({
                   {formatDayShort(d)}
                 </span>
               </div>
+              {/* Split view prints logged / planned; calendar view prints logged only. */}
               <div className="tnum mt-0.5 text-2xs font-medium text-pink">
                 {logged > 0 ? formatDuration(logged) : '–'}
-                <span className="text-lo"> / {planned > 0 ? formatDuration(planned) : '–'}</span>
+                {mode === 'split' && (
+                  <span className="text-lo">
+                    {' '}/ {planned > 0 ? formatDuration(planned) : '–'}
+                  </span>
+                )}
               </div>
             </div>
           )
@@ -284,7 +293,7 @@ export function WeekCalendar({
                   .map((w, k) => (
                     <div
                       key={k}
-                      className="hatch-free pointer-events-none absolute inset-x-px rounded border border-ok/30"
+                      className="pointer-events-none absolute inset-x-px rounded border border-dashed border-ok/45 bg-ok/[0.07]"
                       style={{ top: yOf(w.start), height: hOf(w.start, w.end) }}
                     >
                       <span className="absolute bottom-0.5 right-1 font-display text-2xs font-semibold text-ok">
@@ -305,7 +314,8 @@ export function WeekCalendar({
                         key={c.id}
                         className={clsx(
                           'entry-planned absolute overflow-hidden rounded px-1.5 py-1',
-                          c.isDependencyWork && 'ring-1 ring-warn',
+                          plannedZ,
+                          c.isDependencyWork && 'border-l-[3px] border-warn',
                         )}
                         style={{ ...plannedLane, top: yOf(s), height: hOf(s, e) }}
                         title={`${c.title} · ${formatRange(s, e)}`}
@@ -338,8 +348,8 @@ export function WeekCalendar({
                       key={slot.id}
                       onPointerDown={(e) => beginDrag(e, slot, 'move')}
                       className={clsx(
-                        'entry-planned absolute overflow-hidden rounded px-1.5 py-1',
-                        'ring-2 ring-pink',
+                        'entry-planned absolute overflow-hidden rounded border-2 border-pink px-1.5 py-1',
+                        plannedZ,
                         editable && 'cursor-grab active:cursor-grabbing',
                         dragging && 'z-30 cursor-grabbing shadow-pop',
                       )}
@@ -377,7 +387,7 @@ export function WeekCalendar({
                       <div
                         key={e.id}
                         className={clsx(
-                          'entry-logged animate-fade-in absolute overflow-hidden rounded px-1.5 py-1',
+                          'entry-logged animate-fade-in absolute z-10 overflow-hidden rounded px-1.5 py-1',
                           FILL['skoda-infotainment'],
                         )}
                         style={{ ...loggedLane, top: yOf(s), height: hOf(s, en) }}
@@ -444,12 +454,12 @@ export function CalendarLegend({ showFree = false }: { showFree?: boolean }) {
         Planned
       </span>
       <span className="inline-flex items-center gap-1.5 text-2xs text-mid">
-        <span className="entry-planned h-3 w-4 rounded ring-2 ring-pink" />
+        <span className="entry-planned h-3 w-4 rounded border-2 border-pink" />
         This task
       </span>
       {showFree && (
         <span className="inline-flex items-center gap-1.5 text-2xs text-mid">
-          <span className="hatch-free h-3 w-4 rounded border border-ok/30" />
+          <span className="h-3 w-4 rounded border border-dashed border-ok/45 bg-ok/[0.07]" />
           Available capacity
         </span>
       )}
