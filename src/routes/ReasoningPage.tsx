@@ -206,7 +206,11 @@ function CommunityBoard() {
     })
 
   return (
-    <div className="divide-y divide-hairline rounded-xl border border-hairline bg-panel">
+    <div className="rounded-xl border border-hairline bg-panel">
+      <div className="border-b border-hairline px-5 py-3">
+        <span className="eyebrow text-e-blue">Community feedback — ranked by engagement</span>
+      </div>
+      <div className="divide-y divide-hairline">
       {COMMUNITY.map((g) => {
         const isOpen = open.has(g.group)
         return (
@@ -239,6 +243,7 @@ function CommunityBoard() {
           </div>
         )
       })}
+      </div>
     </div>
   )
 }
@@ -447,9 +452,15 @@ export function ReasoningPage() {
 
             <Panel tone="evidence" eyebrow="Reading it honestly" filled>
               <p>
-                Most of this is people defending a habit that changed under them — that’s fair, and
-                worth listening to. Nobody asked for anything like this concept either. That’s not a
-                reason to ignore it: people rarely ask for something they’ve never been offered.
+                Most of this is people defending a habit that changed under them — that’s feedback
+                for change management, not a request for a new feature. There’s also real feedback
+                on pricing and packaging, and a scatter of smaller gaps. The one group looking
+                forward rather than back is Goals — people asking Toggl to help them plan, not
+                only record.
+              </p>
+              <p className="mt-2.5">
+                None of this is exhaustive, though: feedback like this mostly reflects what people
+                already had and miss, not what they’ve never been offered or thought to ask for.
               </p>
             </Panel>
           </Section>
@@ -460,7 +471,7 @@ export function ReasoningPage() {
             index="03"
             tone="strategy"
             kicker="Toggl strategy"
-            title="What Toggl says it is becoming"
+            title="What is Toggl becoming"
           >
             <Quote
               source="Toggl Community — Introducing Toggl 2.0"
@@ -470,46 +481,36 @@ export function ReasoningPage() {
               do with them.”
             </Quote>
 
-            <div className="grid gap-6 sm:grid-cols-2">
-              <div>
-                <div className="eyebrow text-pink">The shift, in Toggl’s framing</div>
-                <div className="mt-2.5 flex flex-wrap items-center gap-2">
-                  <span className="rounded-lg bg-panel-2 px-3 py-1.5 font-display text-[13px] font-semibold text-mid">
-                    “where did our time go?”
-                  </span>
-                  <span className="font-display text-[15px] text-pink">→</span>
-                  <span className="rounded-lg bg-panel-2 px-3 py-1.5 font-display text-[13px] font-semibold text-hi">
-                    “what should we do next?”
-                  </span>
-                </div>
-                <p className="mt-3 text-[13.5px] leading-relaxed text-mid">
-                  2.0 is described as the direction itself — roadmap, investment and brand — rather
-                  than a release.
-                </p>
-              </div>
-              <div>
-                <div className="eyebrow text-lo">The questions it names</div>
-                <div className="mt-2.5">
-                  <Bullets
-                    tone="strategy"
-                    items={[
-                      'Do we have the capacity to take this on?',
-                      'Are we making money on work we already said yes to?',
-                      'What is the right resourcing decision?',
-                      'What should we take on next?',
-                    ]}
-                  />
-                </div>
-                <p className="mt-2.5 text-[13px] leading-relaxed text-lo">
-                  Three of four are asked in the plural, by someone running a team.
-                </p>
+            <div>
+              <div className="eyebrow text-pink">The shift, in Toggl’s framing</div>
+              <div className="mt-2.5 flex flex-wrap items-center gap-2">
+                <span className="rounded-lg bg-panel-2 px-3 py-1.5 font-display text-[13px] font-semibold text-mid">
+                  “where did our time go?”
+                </span>
+                <span className="font-display text-[15px] text-pink">→</span>
+                <span className="rounded-lg bg-panel-2 px-3 py-1.5 font-display text-[13px] font-semibold text-hi">
+                  “what should we do next?”
+                </span>
               </div>
             </div>
 
-            <Assertion label="My interpretation — not Toggl’s claim">
-              For an individual contributor, “do we have the capacity to take this on?” becomes: can
-              I realistically commit to this work, and when can I actually do it?
-            </Assertion>
+            <div>
+              <div className="eyebrow text-lo">The questions it names</div>
+              <div className="mt-2.5">
+                <Bullets
+                  tone="strategy"
+                  items={[
+                    'Do we have the capacity to take this on?',
+                    'Are we making money on work we already said yes to?',
+                    'What is the right resourcing decision?',
+                    'What should we take on next?',
+                  ]}
+                />
+              </div>
+              <p className="mt-2.5 text-[13px] leading-relaxed text-lo">
+                Three of four are asked in the plural, by someone running a team.
+              </p>
+            </div>
 
             <Panel tone="strategy" eyebrow="The Focus / 2.0 page, same direction" filled>
               <p>
@@ -540,6 +541,11 @@ export function ReasoningPage() {
                 />
               </div>
             </Panel>
+
+            <Assertion label="My interpretation — not Toggl’s claim">
+              For an individual contributor, “do we have the capacity to take this on?” becomes: can
+              I realistically commit to this work, and when can I actually do it?
+            </Assertion>
           </Section>
 
           {/* 04 — Product analysis */}
