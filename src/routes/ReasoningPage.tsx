@@ -115,18 +115,15 @@ const COMMUNITY: { group: string; note: string; items: string[] }[] = [
 /* --------------------------------------------------------------- The matrix */
 
 /**
- * Three lenses, three column groups. Strategy is the brief's own
- * requirements — IC value, the W0 constraint, fit with Toggl's stated
- * direction. Product analysis collapses to one measure, Feasibility: a
- * blend of data advantage and how much of this already exists in the
- * product, since both answer the same question — can this be built well.
- * User feedback is community demand, read off the board in section 02.
+ * Strategy is the brief's own requirements — IC value, the W0 constraint,
+ * fit with Toggl's stated direction. User feedback is community demand,
+ * read off the board in section 02.
  *
  * Effort is a T-shirt size, not a dot rating, because it isn't a quality
- * judgement the way the others are — it is a cost. Score sums the four
- * quality columns (high/med/low → 3/2/1) and divides by effort (S/M/L →
- * 1/2/3): a plain value-over-cost index, computed from the ratings, not a
- * separate opinion.
+ * judgement the way the others are — it is a cost. Score sums the quality
+ * columns (high/med/low → 3/2/1) and divides by effort (S/M/L → 1/2/3): a
+ * plain value-over-cost index, computed from the ratings, not a separate
+ * opinion.
  */
 const SCORE: Record<Level, number> = { high: 3, med: 2, low: 1 }
 
@@ -138,7 +135,6 @@ interface Candidate {
   name: string
   /** IC value, W0 immediacy, Toggl 2.0 fit */
   strategy: [Level, Level, Level]
-  feasibility: Level
   feedback: Level
   effort: Effort
   verdict: 'build' | 'later' | 'no'
@@ -148,7 +144,6 @@ const CANDIDATES: Candidate[] = [
   {
     name: 'Intelligent estimation',
     strategy: ['high', 'high', 'high'],
-    feasibility: 'high',
     feedback: 'low',
     effort: 'M',
     verdict: 'build',
@@ -156,7 +151,6 @@ const CANDIDATES: Candidate[] = [
   {
     name: 'Intelligent scheduling',
     strategy: ['high', 'high', 'high'],
-    feasibility: 'high',
     feedback: 'low',
     effort: 'M',
     verdict: 'build',
@@ -164,7 +158,6 @@ const CANDIDATES: Candidate[] = [
   {
     name: 'Adaptive replanning',
     strategy: ['high', 'med', 'high'],
-    feasibility: 'high',
     feedback: 'low',
     effort: 'L',
     verdict: 'build',
@@ -172,7 +165,6 @@ const CANDIDATES: Candidate[] = [
   {
     name: 'Goal updates',
     strategy: ['low', 'low', 'med'],
-    feasibility: 'med',
     feedback: 'high',
     effort: 'S',
     verdict: 'later',
@@ -180,7 +172,6 @@ const CANDIDATES: Candidate[] = [
   {
     name: 'Custom dashboards / charts',
     strategy: ['med', 'low', 'low'],
-    feasibility: 'med',
     feedback: 'med',
     effort: 'L',
     verdict: 'no',
@@ -188,7 +179,6 @@ const CANDIDATES: Candidate[] = [
   {
     name: 'Personal utilization',
     strategy: ['med', 'low', 'med'],
-    feasibility: 'med',
     feedback: 'low',
     effort: 'S',
     verdict: 'no',
@@ -196,7 +186,6 @@ const CANDIDATES: Candidate[] = [
   {
     name: 'Planning workflow improvements',
     strategy: ['med', 'low', 'low'],
-    feasibility: 'med',
     feedback: 'high',
     effort: 'L',
     verdict: 'no',
@@ -204,17 +193,17 @@ const CANDIDATES: Candidate[] = [
 ]
 
 /**
- * Weights read as confidence, 0–1. Strategy and Product analysis were both
- * well covered — the brief, Toggl's own announcement, a full walkthrough of
- * the product — full confidence on each. User feedback is one ranked
- * community board and two Capterra reviews: real, but thin evidence to hang
- * a decision on, so it counts for a quarter as much.
+ * Weights read as confidence, 0–1. Strategy was well covered — the brief,
+ * Toggl's own announcement, a full walkthrough of the product — full
+ * confidence. User feedback is one ranked community board and two Capterra
+ * reviews: real, but thin evidence to hang a decision on, so it counts for
+ * a quarter as much.
  */
-const WEIGHT = { strategy: 1, feasibility: 1, feedback: 0.25 }
+const WEIGHT = { strategy: 1, feedback: 0.25 }
 
 function score(c: Candidate): number {
   const strategySum = c.strategy.reduce((acc, s) => acc + SCORE[s], 0)
-  const weighted = WEIGHT.strategy * strategySum + WEIGHT.feasibility * SCORE[c.feasibility] + WEIGHT.feedback * SCORE[c.feedback]
+  const weighted = WEIGHT.strategy * strategySum + WEIGHT.feedback * SCORE[c.feedback]
   return weighted / EFFORT_VALUE[c.effort]
 }
 
@@ -264,10 +253,6 @@ function Matrix() {
               <Weight value="1.0" />
             </th>
             <th className={clsx(SUB_TH, 'border-l border-hairline/40')}>
-              Feasibility
-              <Weight value="1.0" />
-            </th>
-            <th className={clsx(SUB_TH, 'border-l border-hairline/40')}>
               Community demand
               <Weight value="0.25" tone="lo" />
             </th>
@@ -298,9 +283,6 @@ function Matrix() {
               </td>
               <td className="px-3 py-2.5">
                 <Rating level={c.strategy[2]} />
-              </td>
-              <td className="border-l border-hairline/40 px-3 py-2.5">
-                <Rating level={c.feasibility} />
               </td>
               <td className="border-l border-hairline/40 px-3 py-2.5">
                 <Rating level={c.feedback} />
@@ -634,14 +616,15 @@ export function ReasoningPage() {
             title="Toggl has the ingredients, but they are isolated and unfinished"
             lede="I went through the product in detail: Timer in all four views — Calendar, Split View, Time Log, Timesheet, Analyze, Plan, the AI Copilot and more."
           >
-            <Panel tone="analysis" eyebrow="General feedback">
-              <p className="text-[13.5px] leading-relaxed text-mid">
+            <div>
+              <div className="eyebrow text-e-lilac">General feedback</div>
+              <p className="mt-2 text-[13.5px] leading-relaxed text-mid">
                 Plenty of smaller things would help an individual contributor day to day — UX
                 polish, missing project-management functionality, simple bug fixes. None of them
                 made the cut here: on their own they rarely bring immediate value, rarely fit a
                 clear strategic direction, and rarely carry much weight by themselves.
               </p>
-            </Panel>
+            </div>
 
             <Panel tone="analysis" eyebrow="The specific gap" filled>
               <p className="text-hi">The intelligence is fragmented, and it waits to be asked.</p>
@@ -714,6 +697,13 @@ export function ReasoningPage() {
                 arithmetic on top of a judgement, not a measurement of its own
               </span>
             </div>
+
+            <p className="text-[13px] leading-relaxed text-lo">
+              This is a weighted score, not RICE — the weight sits at the column level. I skipped
+              RICE because I do not have a Reach metric, or granular, item-level confidence to
+              hang it on; what I actually have is one confidence per evidence source, applied the
+              same way to every row it touches.
+            </p>
 
             <div className="grid gap-x-8 gap-y-4 rounded-xl border border-hairline bg-panel p-[18px] sm:grid-cols-2">
               <div>
