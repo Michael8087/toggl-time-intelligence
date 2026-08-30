@@ -210,7 +210,7 @@ const CANDIDATES: Candidate[] = [
  * feedback is a single ranked community board and two Capterra reviews:
  * real, but thin, so it counts for less here.
  */
-const WEIGHT = { strategy: 1.5, feasibility: 1, feedback: 0.5 }
+const WEIGHT = { strategy: 1.5, feasibility: 1.5, feedback: 0.5 }
 
 function score(c: Candidate): number {
   const strategySum = c.strategy.reduce((acc, s) => acc + SCORE[s], 0)
@@ -228,6 +228,20 @@ function EffortBadge({ effort }: { effort: Effort }) {
 
 const SUB_TH = 'px-3 py-2 font-display text-2xs font-semibold uppercase tracking-[0.06em] text-lo'
 
+/** The literal multiplier a column carries in the Score formula. */
+function Weight({ value, tone = 'pink' }: { value: string; tone?: 'pink' | 'lo' }) {
+  return (
+    <span
+      className={clsx(
+        'ml-1 inline-block font-display text-[9.5px] font-bold normal-case tracking-normal',
+        tone === 'pink' ? 'text-pink' : 'text-dim',
+      )}
+    >
+      ×{value}
+    </span>
+  )
+}
+
 function Matrix() {
   return (
     <div className="overflow-x-auto rounded-xl border border-hairline bg-panel">
@@ -237,11 +251,26 @@ function Matrix() {
             <th className="px-5 py-2.5 font-display text-2xs font-semibold uppercase tracking-[0.1em] text-lo">
               Opportunity
             </th>
-            <th className={clsx(SUB_TH, 'border-l border-hairline/40')}>IC value</th>
-            <th className={SUB_TH}>W0 immediacy</th>
-            <th className={SUB_TH}>Toggl 2.0 fit</th>
-            <th className={clsx(SUB_TH, 'border-l border-hairline/40')}>Feasibility</th>
-            <th className={clsx(SUB_TH, 'border-l border-hairline/40')}>Community demand</th>
+            <th className={clsx(SUB_TH, 'border-l border-hairline/40')}>
+              IC value
+              <Weight value="1.5" />
+            </th>
+            <th className={SUB_TH}>
+              W0 immediacy
+              <Weight value="1.5" />
+            </th>
+            <th className={SUB_TH}>
+              Toggl 2.0 fit
+              <Weight value="1.5" />
+            </th>
+            <th className={clsx(SUB_TH, 'border-l border-hairline/40')}>
+              Feasibility
+              <Weight value="1.5" />
+            </th>
+            <th className={clsx(SUB_TH, 'border-l border-hairline/40')}>
+              Community demand
+              <Weight value="0.5" tone="lo" />
+            </th>
             <th className={clsx(SUB_TH, 'border-l border-hairline/40 text-center')}>Effort</th>
             <th className={clsx(SUB_TH, 'text-center')}>Score</th>
             <th className="px-5 py-2.5 text-right font-display text-2xs font-semibold uppercase tracking-[0.1em] text-lo">
@@ -345,27 +374,6 @@ function CommunityBoard() {
         )
       })}
       </div>
-    </div>
-  )
-}
-
-/** A tight label — one-line explanation list, for the places prose would bloat. */
-function Terms({ items, tone = 'neutral' }: { items: [string, string][]; tone?: keyof typeof TONE }) {
-  return (
-    <div className="divide-y divide-hairline rounded-xl border border-hairline bg-panel">
-      {items.map(([term, note]) => (
-        <div key={term} className="flex flex-col gap-0.5 px-5 py-3 sm:flex-row sm:gap-5">
-          <span
-            className={clsx(
-              'shrink-0 font-display text-[13.5px] font-semibold sm:w-[168px]',
-              TONE[tone].text === 'text-mid' ? 'text-hi' : TONE[tone].text,
-            )}
-          >
-            {term}
-          </span>
-          <span className="min-w-0 text-[13.5px] leading-relaxed text-mid">{note}</span>
-        </div>
-      ))}
     </div>
   )
 }
@@ -529,17 +537,18 @@ export function ReasoningPage() {
               </a>
             </Panel>
 
-            <Panel tone="evidence" eyebrow="Reading it honestly" filled>
-              <p>
+            <div>
+              <div className="eyebrow text-e-blue">Reading it honestly</div>
+              <p className="mt-2 text-[14px] leading-relaxed text-mid">
                 Most of this is people defending a habit that changed under them — that’s feedback
                 for change management, not a request for a new feature. There’s also real feedback
                 on pricing and packaging, and a scatter of other gaps.
               </p>
-              <p className="mt-2.5 font-semibold text-hi">
+              <p className="mt-2.5 text-[14px] font-semibold leading-relaxed text-hi">
                 None of this is exhaustive, though: feedback like this mostly reflects what people
                 already had and miss, not what they’ve never been offered or thought to ask for.
               </p>
-            </Panel>
+            </div>
           </Section>
 
           {/* 03 — Strategy */}
@@ -706,28 +715,6 @@ export function ReasoningPage() {
               </span>
             </div>
 
-            <Panel tone="decision" eyebrow="Reading the score honestly" filled>
-              <p>
-                Strategy carries 1.5× weight here, Product analysis 1×, User feedback 0.5× — I had
-                the brief, Toggl’s own announcement and a full walkthrough of the product to lean
-                on for the first two; the third is one ranked community board and two Capterra
-                reviews, real but thin, so it counts for less.
-              </p>
-              <p className="mt-2.5">
-                Even weighted down, Goal updates still scores highest at 11.0, and Personal
-                utilization still beats all three bets at 10.0 against 8.5, 8.5 and 5.2. Weighting
-                narrowed the gap — it did not close it, because Goal updates is genuinely cheap and
-                genuinely requested. That is not a flaw in the formula to fix with another
-                adjustment.
-              </p>
-              <p className="mt-2.5 font-display text-[15px] font-medium text-hi">
-                I am overriding the score here. Estimation, scheduling and replanning are being
-                judged on strategic fit and the data advantage nothing else in this table can
-                touch — not on throughput. A score is an input to prioritization, not a
-                substitute for it.
-              </p>
-            </Panel>
-
             <div className="grid gap-x-8 gap-y-4 rounded-xl border border-hairline bg-panel p-[18px] sm:grid-cols-2">
               <div>
                 <div className="eyebrow text-warn">Why these three</div>
@@ -805,15 +792,18 @@ export function ReasoningPage() {
               </div>
             </div>
 
-            <Assertion>
-              The prototype does not add a field. It fills in the one already there.
-            </Assertion>
-
             <Equation
-              terms={['Estimate', 'Capacity', 'Existing commitments', 'Deadline']}
+              terms={[
+                'Estimate',
+                'Capacity',
+                'Existing commitments',
+                'Deadline',
+                'Reality changes',
+                'Adjustment',
+                'Rescheduling',
+              ]}
               result="Realistic commitment"
-              second={{ terms: ['Reality changes', 'Adjustment', 'Rescheduling'], result: 'Realistic commitment' }}
-              note="Scheduling is not the secondary half of the concept. It is the action layer that makes the intelligence worth having — and, usefully for a first-week constraint, it needs no personal history at all. When reality changes the commitment, Toggl notices, proposes an adjustment and reschedules the remainder: the same equation, run again."
+              note="Scheduling is not the secondary half of the concept. It is the action layer that makes the intelligence worth having — and, usefully for a first-week constraint, it needs no personal history at all. The same equation covers the adjustment: when reality changes the commitment, Toggl folds it straight back in, rather than running a second calculation."
             />
 
             <div className="border-t border-hairline pt-6">
@@ -838,24 +828,27 @@ export function ReasoningPage() {
               </Panel>
             </Grid>
 
-            <Panel eyebrow="What can make a plan untrue">
-              <Bullets
-                tone="strategy"
-                items={[
-                  'A meeting lands inside a block you had set aside',
-                  'The work is running longer than the estimate assumed',
-                  'The task description grows a second surface',
-                  'You could not start when you planned to, or new work arrives on top',
-                  'Something the task quietly waits on slips',
-                ]}
-              />
+            <div>
+              <div className="eyebrow text-lo">What can make a plan untrue</div>
+              <div className="mt-2">
+                <Bullets
+                  tone="strategy"
+                  items={[
+                    'A meeting lands inside a block you had set aside',
+                    'The work is running longer than the estimate assumed',
+                    'The task description grows a second surface',
+                    'You could not start when you planned to, or new work arrives on top',
+                    'Something the task quietly waits on slips',
+                  ]}
+                />
+              </div>
               <p className="mt-3 text-[13.5px] leading-relaxed text-lo">
                 Deliberately not a dependency-management system — every trigger is something Toggl
                 already observes: tracked time, the connected calendar, edits to the task. “Falling
                 behind” is deliberately not the first: a concept that only tells you that you are
                 late gets muted in a week.
               </p>
-            </Panel>
+            </div>
 
             <Panel>
               <div className="eyebrow mb-3 text-lo">The slower loop</div>
@@ -929,15 +922,6 @@ export function ReasoningPage() {
               something that has not earned it. The pairs matter more than any figure.
             </Prose>
 
-            <Terms
-              items={[
-                ['Trust & false precision', 'An estimate you did not make is one you have no reason to believe — hence an auditable sum of factors, and a range that is widest exactly when the system knows least.'],
-                ['Thin or stale data', 'Cold start leans on project data before personal data; work patterns then shift, so a baseline that averages everything quotes a pace that no longer exists.'],
-                ['Own numbers', 'Many users will prefer their own estimate. The plan has to be worth having when the estimate is overridden.'],
-                ['Intervention fatigue', 'A system that raises every wobble becomes noise, then gets muted. That threshold is the hardest unsolved part.'],
-                ['Prototype scope', 'Frontend only, mocked data, a deterministic estimator rather than a model — it validates the interaction and the argument, not the accuracy.'],
-              ]}
-            />
           </Section>
 
           {/* 09 — Sources */}
