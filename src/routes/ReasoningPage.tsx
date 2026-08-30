@@ -574,20 +574,6 @@ export function ReasoningPage() {
               </p>
             </Panel>
 
-            <Grid cols={4}>
-              {[
-                ['Proactive', 'Arrives with the task'],
-                ['Contextual', 'Knows the week and the deadline'],
-                ['Embedded', 'On the task panel and calendar'],
-                ['Actionable', 'Ends in a block, not an answer'],
-              ].map(([k, v]) => (
-                <div key={k} className="rounded-xl border border-e-lilac/35 bg-e-lilac/[0.07] p-4">
-                  <div className="font-display text-[13.5px] font-bold text-e-lilac">{k}</div>
-                  <div className="mt-1.5 text-[13px] leading-snug text-mid">{v}</div>
-                </div>
-              ))}
-            </Grid>
-
             <Grid cols={2}>
               <Panel eyebrow="Today — Copilot">
                 <p className="font-display text-[14.5px] text-hi">
@@ -726,6 +712,20 @@ export function ReasoningPage() {
                 commitments with less cognitive effort.
               </p>
             </div>
+
+            <Grid cols={4}>
+              {[
+                ['Proactive', 'Arrives with the task'],
+                ['Contextual', 'Knows the week and the deadline'],
+                ['Embedded', 'On the task panel and calendar'],
+                ['Actionable', 'Ends in a block, not an answer'],
+              ].map(([k, v]) => (
+                <div key={k} className="rounded-xl border border-pink/35 bg-pink-lo/50 p-4">
+                  <div className="font-display text-[13.5px] font-bold text-pink-hi">{k}</div>
+                  <div className="mt-1.5 text-[13px] leading-snug text-mid">{v}</div>
+                </div>
+              ))}
+            </Grid>
 
             <Grid cols={2}>
               <Panel eyebrow="What an estimate says">
