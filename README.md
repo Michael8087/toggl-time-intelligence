@@ -4,6 +4,7 @@ A product case-study prototype for **Toggl 2.0** (built under the working name T
 aimed at the Individual Contributor / Freelancer experience.
 
 **[Live prototype →](https://michael8087.github.io/toggl-time-intelligence/)**
+ · **[The reasoning behind it →](https://michael8087.github.io/toggl-time-intelligence/reasoning)**
 
 ---
 
@@ -63,8 +64,12 @@ npm install && npm run dev
 | `src/components/TaskDrawer.tsx` | The task panel, rebuilt from the real screen |
 | `src/components/WeekCalendar.tsx` | Split-view calendar with draggable planned blocks |
 | `src/routes/TaskDashboard.tsx` | Actual vs estimated, on the real dashboard's furniture |
+| `src/routes/ReasoningPage.tsx` | The written case study: evidence, strategy, prioritization and the bet |
 
-Turn on **Case-study notes** in the top bar to see the design reasoning annotated in place.
+**Reasoning** in the top bar opens the written case study at `/reasoning` — what the brief
+asked for, what the community's ranked feedback actually says, what Toggl's own 2.0
+announcement commits to, and how those resolve into this bet rather than the most-requested
+feature. Turn on **Case-study notes** to see the same reasoning annotated in place.
 The theme control is time-aware: light through the working day, dark in the evening, with a
 manual override.
 

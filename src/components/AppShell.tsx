@@ -18,6 +18,7 @@ import {
   Send,
   Settings,
   Sparkles,
+  ScrollText,
   Sun,
   SunMoon,
   TrendingUp,
@@ -26,7 +27,7 @@ import {
   Palmtree,
   Star,
 } from 'lucide-react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import { USER } from '../data/demo'
 import { useDemo } from '../state/DemoContext'
@@ -258,6 +259,13 @@ function DemoBar() {
         Toggl 2.0 · time intelligence for individual contractors
       </span>
       <div className="ml-auto flex items-center gap-1.5">
+        <Link
+          to="/reasoning"
+          className="inline-flex h-6 items-center gap-1.5 rounded-pill border border-hairline-2 px-2.5 font-display text-[11px] font-semibold text-mid transition-colors hover:border-lo hover:text-hi"
+        >
+          <ScrollText size={11} />
+          Reasoning
+        </Link>
         <button
           onClick={nextTheme}
           title={
