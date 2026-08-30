@@ -1,10 +1,25 @@
 import clsx from 'clsx'
-import { useRef, useState } from 'react'
-import { CalendarClock, DollarSign, Flag, Timer as TimerIcon } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import {
+  ArrowRight,
+  CalendarClock,
+  DollarSign,
+  Flag,
+  Folder,
+  ListChecks,
+  MoreVertical,
+  Play,
+  Tag,
+  Timer as TimerIcon,
+  X,
+} from 'lucide-react'
 import type { Commitment, Interval, PlannedSlot, TimeEntry } from '../types'
 import { PROJECTS } from '../data/demo'
+import { TooltipCard, TooltipRow } from './ui'
 import {
   addMinutes,
+  formatDate,
+  formatDayAndDate,
   formatDayShort,
   formatDuration,
   formatRange,
@@ -15,8 +30,13 @@ import {
   sameDay,
 } from '../lib/time'
 
-const VIEW_START = 8
-const VIEW_END = 19
+// The grid covers the whole day and scrolls; the working window is what the
+// user actually sees on arrival, with the rest washed out.
+const VIEW_START = 0
+const VIEW_END = 24
+const WORK_START = 9
+const WORK_END = 17
+const SCROLL_TO = 8
 const HOUR_H = 46
 const GUTTER = 66
 const SNAP_MIN = 15
@@ -49,8 +69,20 @@ interface DragState {
   dayShift: number
 }
 
+/** A task shown across its scheduled dates in the all-day band — not a time
+ *  entry and not a planned block, but the task itself. */
+export interface TaskBar {
+  id: string
+  title: string
+  project: string
+  start: Date
+  end: Date
+}
+
 export interface WeekCalendarProps {
   days: Date[]
+  /** Parent tasks, drawn as date-spanning bars above the grid. */
+  taskBars?: TaskBar[]
   commitments?: Commitment[]
   /** Free capacity, drawn in behind the entries during the capacity check. */
   windows?: Interval[]
@@ -67,13 +99,146 @@ export interface WeekCalendarProps {
   mode?: 'split' | 'calendar' | 'plan'
   dimPastDeadline?: boolean
   onChangeSlot?: (slot: PlannedSlot) => void
+  /** Height of the scrolling viewport over the 24-hour grid. */
+  viewportHeight?: number
   slotLabel?: string
   className?: string
+}
+
+
+/** Explains the washed-out region rather than leaving it a mystery. */
+function OffHoursTip({ day, anchor }: { day: Date; anchor: 'top' | 'bottom' }) {
+  return (
+    <div
+      className={clsx(
+        'pointer-events-none absolute left-1/2 z-40 hidden w-[272px] -translate-x-1/2 group-hover:block',
+        anchor === 'bottom' ? 'bottom-2' : 'top-2',
+      )}
+    >
+      <div className="rounded-xl border border-hairline bg-panel px-4 py-3 shadow-pop">
+        <div className="font-display text-[14px] font-semibold text-hi">
+          Outside working hours
+        </div>
+        <div className="mt-0.5 text-[13px] text-mid">{formatDate(day)}</div>
+        <div className="my-2.5 h-px bg-hairline" />
+        <div className="flex items-baseline justify-between gap-3">
+          <span className="text-[13px] text-mid">Working hours</span>
+          <span className="tnum whitespace-nowrap font-display text-[13px] font-semibold text-hi">
+            9:00 AM – 5:00 PM
+          </span>
+        </div>
+        <div className="my-2.5 h-px bg-hairline" />
+        <span className="font-display text-[13px] text-mid underline">Change schedule</span>
+      </div>
+    </div>
+  )
+}
+
+interface EntryDetail {
+  kind: 'Logged' | 'Planned'
+  title: string
+  project: string
+  tags: string[]
+  billable: boolean
+  start: Date
+  end: Date
+  rect: DOMRect
+}
+
+/** The editor Toggl opens when you click an entry, in either view. */
+function EntryPopover({ detail, onClose }: { detail: EntryDetail; onClose: () => void }) {
+  const { rect } = detail
+  const width = 480
+  const left = Math.min(
+    Math.max(12, rect.left + rect.width / 2 - width / 2),
+    window.innerWidth - width - 12,
+  )
+  const top = Math.min(rect.top + 8, window.innerHeight - 300)
+
+  return (
+    <>
+      <div className="fixed inset-0 z-[70]" onClick={onClose} />
+      <div
+        className="fixed z-[71] animate-fade-up overflow-hidden rounded-xl border border-hairline bg-panel shadow-pop"
+        style={{ left, top, width }}
+      >
+        <div className="flex items-center gap-3 px-5 pt-4">
+          <span className="font-display text-2xs font-semibold uppercase tracking-[0.1em] text-mid">
+            {detail.kind}
+          </span>
+          <div className="ml-auto flex items-center gap-3">
+            <span className="grid h-8 w-8 place-items-center rounded-full bg-pink text-white">
+              <Play size={14} fill="currentColor" className="ml-0.5" />
+            </span>
+            <ListChecks size={17} className="text-mid" />
+            <MoreVertical size={17} className="text-mid" />
+            <button onClick={onClose} className="text-mid hover:text-hi" aria-label="Close">
+              <X size={18} />
+            </button>
+          </div>
+        </div>
+
+        <div className="px-5 pb-1 pt-3">
+          <div className="font-display text-[17px] font-semibold text-hi">{detail.title}</div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 px-5 py-3">
+          <span className="inline-flex h-9 items-center gap-2 rounded-lg border border-dashed border-hairline-2 px-3 font-display text-[14px] text-mid">
+            <ListChecks size={14} />
+            Task
+          </span>
+          <span className="inline-flex h-9 items-center gap-2 rounded-lg bg-e-blue/15 px-3 font-display text-[14px] font-medium text-e-blue">
+            <Folder size={14} />
+            {detail.project}
+          </span>
+          {detail.tags.map((t) => (
+            <span
+              key={t}
+              className="inline-flex h-9 items-center gap-2 rounded-lg bg-pink-lo px-3 font-display text-[14px] font-medium text-pink"
+            >
+              <Tag size={14} />
+              {t}
+            </span>
+          ))}
+          {detail.billable && (
+            <span className="inline-flex h-9 items-center rounded-lg bg-pink-lo px-3 text-pink">
+              <DollarSign size={15} />
+            </span>
+          )}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 px-5 pb-4">
+          <span className="inline-flex h-9 items-center rounded-lg bg-panel-2 px-3 font-display text-[14px] text-hi">
+            {formatDayShort(detail.start)}, {formatDate(detail.start)}
+          </span>
+          <span className="tnum inline-flex h-9 items-center gap-2 rounded-lg bg-panel-2 px-3 font-display text-[14px] text-hi">
+            {formatTime(detail.start)} <ArrowRight size={13} className="text-mid" />{' '}
+            {formatTime(detail.end)}
+          </span>
+          <span className="tnum inline-flex h-9 items-center gap-2 rounded-lg bg-panel-2 px-3 font-display text-[14px] text-hi">
+            <TimerIcon size={14} className="text-mid" />
+            {formatDuration(hoursBetween(detail.start, detail.end))}
+          </span>
+        </div>
+
+        <div className="flex justify-end border-t border-hairline px-5 py-3">
+          <button
+            onClick={onClose}
+            className="inline-flex h-10 items-center gap-2 rounded-lg bg-pink-lo px-5 font-display text-[14px] font-semibold text-pink"
+          >
+            Save
+            <span className="text-[13px] opacity-70">⏎</span>
+          </button>
+        </div>
+      </div>
+    </>
+  )
 }
 
 export function WeekCalendar({
   days,
   commitments = [],
+  taskBars = [],
   windows = [],
   slots = [],
   entries = [],
@@ -83,11 +248,22 @@ export function WeekCalendar({
   mode = 'split',
   dimPastDeadline = false,
   onChangeSlot,
+  viewportHeight = 520,
   slotLabel = 'Implement navigation component',
   className,
 }: WeekCalendarProps) {
   const gridRef = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
   const [drag, setDrag] = useState<DragState | null>(null)
+  const [hoverDay, setHoverDay] = useState<number | null>(null)
+  const [detail, setDetail] = useState<EntryDetail | null>(null)
+
+  // Open on the working day rather than at midnight.
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = (SCROLL_TO - VIEW_START) * HOUR_H
+    }
+  }, [])
   const hours = Array.from({ length: VIEW_END - VIEW_START + 1 }, (_, i) => VIEW_START + i)
   const bodyH = (VIEW_END - VIEW_START) * HOUR_H
 
@@ -189,6 +365,30 @@ export function WeekCalendar({
     return { logged, planned }
   }
 
+  // Pack task bars into stacked lanes. Collision is measured in day columns,
+  // not timestamps: two tasks due the same day overlap on screen even when
+  // their times do not.
+  const dayIndex = (d: Date, fallback: number) => {
+    const i = days.findIndex((x) => sameDay(x, d))
+    return i < 0 ? fallback : i
+  }
+  const placed = taskBars
+    .map((bar) => ({
+      bar,
+      from: dayIndex(bar.start, 0),
+      to: dayIndex(bar.end, days.length - 1),
+    }))
+    .sort((a, b) => a.from - b.from)
+
+  const lanes: { bar: TaskBar; from: number; to: number }[][] = []
+  for (const item of placed) {
+    const lane = lanes.find(
+      (row) => !row.some((o) => item.from <= o.to && o.from <= item.to),
+    )
+    if (lane) lane.push(item)
+    else lanes.push([item])
+  }
+
   return (
     <div className={clsx('select-none bg-canvas', className)}>
       {/* Day headers */}
@@ -223,21 +423,87 @@ export function WeekCalendar({
                   {formatDayShort(d)}
                 </span>
               </div>
-              {/* Split view prints logged / planned; calendar view prints logged only. */}
-              <div className="tnum mt-0.5 text-2xs font-medium text-pink">
-                {logged > 0 ? formatDuration(logged) : '–'}
-                {mode === 'split' && (
-                  <span className="text-lo">
-                    {' '}/ {planned > 0 ? formatDuration(planned) : '–'}
-                  </span>
-                )}
+              {/* Split view prints logged / planned; calendar view prints logged
+                  only — but the hover breaks both out either way. */}
+              <div className="group relative mt-0.5 w-fit">
+                <div className="tnum cursor-default text-2xs font-medium text-pink">
+                  {logged > 0 ? formatDuration(logged) : '–'}
+                  {mode === 'split' && (
+                    <span className="text-lo">
+                      {' '}/ {planned > 0 ? formatDuration(planned) : '–'}
+                    </span>
+                  )}
+                </div>
+                <div className="pointer-events-none absolute left-0 top-full z-50 hidden pt-2 group-hover:block">
+                  <TooltipCard className="w-[232px]">
+                    <div className="font-display text-[15px] font-semibold text-hi">
+                      {formatDayAndDate(d)}
+                    </div>
+                    <div className="my-2.5 h-px bg-hairline" />
+                    <div className="space-y-2">
+                      <TooltipRow
+                        icon={TimerIcon}
+                        label="Logged"
+                        tone="pink"
+                        value={logged > 0 ? formatDuration(logged) : '–'}
+                      />
+                      <TooltipRow
+                        icon={CalendarClock}
+                        label="Planned"
+                        value={planned > 0 ? formatDuration(planned) : '–'}
+                      />
+                    </div>
+                  </TooltipCard>
+                </div>
               </div>
             </div>
           )
         })}
       </div>
 
-      {/* Grid */}
+      {/* All-day band: tasks across their scheduled dates. */}
+      {taskBars.length > 0 && (
+        <div className="flex border-b border-hairline">
+          <div
+            className="flex shrink-0 items-start justify-center pt-2"
+            style={{ width: GUTTER }}
+          >
+            <X size={14} className="cursor-pointer text-lo hover:text-hi" />
+          </div>
+          <div className="min-w-0 flex-1 space-y-1 py-2 pr-1">
+            {lanes.map((lane, li) => (
+              <div key={li} className="relative h-[22px]">
+                {lane.map(({ bar, from: start, to: end }) => {
+                  return (
+                    <div
+                      key={bar.id}
+                      className="absolute top-0 flex h-[22px] items-center gap-1.5 overflow-hidden rounded bg-e-blue/15 px-2"
+                      style={{
+                        left: `${(start / days.length) * 100}%`,
+                        width: `${((end - start + 1) / days.length) * 100}%`,
+                      }}
+                      title={`${bar.title} · ${bar.project}`}
+                    >
+                      <span className="truncate font-display text-2xs font-bold text-e-blue">
+                        {bar.title}
+                      </span>
+                      <span className="truncate text-2xs text-mid">· {bar.project}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Grid — scrolls through the full 24 hours */}
+      <div className="relative">
+      <div
+        ref={scrollRef}
+        className="scrollbar-slim overflow-y-auto"
+        style={{ height: viewportHeight }}
+      >
       <div
         ref={gridRef}
         className="relative"
@@ -259,11 +525,13 @@ export function WeekCalendar({
         ))}
 
         <div className="absolute inset-0 flex" style={{ paddingLeft: GUTTER }}>
-          {days.map((day) => {
+          {days.map((day, di) => {
             const past = deadline ? day > deadline && !sameDay(day, deadline) : false
             return (
               <div
                 key={day.toISOString()}
+                onMouseEnter={() => setHoverDay(di)}
+                onMouseLeave={() => setHoverDay((v) => (v === di ? null : v))}
                 className={clsx(
                   'relative flex-1 border-l border-hairline',
                   past && dimPastDeadline && 'bg-surface/60',
@@ -279,13 +547,17 @@ export function WeekCalendar({
 
                 {/* Outside working hours */}
                 <div
-                  className="pointer-events-none absolute inset-x-0 bg-surface/60"
-                  style={{ top: 0, height: (9 - VIEW_START) * HOUR_H }}
-                />
+                  className="group absolute inset-x-0 bg-surface/60"
+                  style={{ top: 0, height: (WORK_START - VIEW_START) * HOUR_H }}
+                >
+                  <OffHoursTip day={day} anchor="bottom" />
+                </div>
                 <div
-                  className="pointer-events-none absolute inset-x-0 bg-surface/60"
-                  style={{ top: (17 - VIEW_START) * HOUR_H, bottom: 0 }}
-                />
+                  className="group absolute inset-x-0 bg-surface/60"
+                  style={{ top: (WORK_END - VIEW_START) * HOUR_H, bottom: 0 }}
+                >
+                  <OffHoursTip day={day} anchor="top" />
+                </div>
 
                 {/* Free capacity */}
                 {windows
@@ -312,7 +584,20 @@ export function WeekCalendar({
                     return (
                       <div
                         key={c.id}
+                        onClick={(ev) =>
+                          setDetail({
+                            kind: 'Planned',
+                            title: c.title,
+                            project: project?.name ?? '—',
+                            tags: [],
+                            billable: project?.billable ?? false,
+                            start: s,
+                            end: e,
+                            rect: ev.currentTarget.getBoundingClientRect(),
+                          })
+                        }
                         className={clsx(
+                          'cursor-pointer',
                           'entry-planned absolute overflow-hidden rounded px-1.5 py-1',
                           plannedZ,
                           c.isDependencyWork && 'border-l-[3px] border-warn',
@@ -386,8 +671,20 @@ export function WeekCalendar({
                     return (
                       <div
                         key={e.id}
+                        onClick={(ev) =>
+                          setDetail({
+                            kind: 'Logged',
+                            title: e.activity,
+                            project: 'Infotainment Frontend',
+                            tags: ['Component'],
+                            billable: true,
+                            start: s,
+                            end: en,
+                            rect: ev.currentTarget.getBoundingClientRect(),
+                          })
+                        }
                         className={clsx(
-                          'entry-logged animate-fade-in absolute z-10 overflow-hidden rounded px-1.5 py-1',
+                          'entry-logged animate-fade-in absolute z-10 cursor-pointer overflow-hidden rounded px-1.5 py-1',
                           FILL['skoda-infotainment'],
                         )}
                         style={{ ...loggedLane, top: yOf(s), height: hOf(s, en) }}
@@ -438,6 +735,39 @@ export function WeekCalendar({
           })}
         </div>
       </div>
+      </div>
+
+      {/* Which half is which — only meaningful when the lanes are split. */}
+      {mode === 'split' && hoverDay !== null && (
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 z-30 flex"
+          style={{ paddingLeft: GUTTER }}
+        >
+          {days.map((d, i) => (
+            <div key={d.toISOString()} className="relative h-6 flex-1">
+              {i === hoverDay && (
+                <>
+                  <span
+                    className="absolute top-0 flex h-6 items-center justify-center gap-1 bg-panel/95 font-display text-2xs font-semibold uppercase tracking-[0.06em] text-mid"
+                    style={loggedLane}
+                  >
+                    <TimerIcon size={11} /> Logged
+                  </span>
+                  <span
+                    className="absolute top-0 flex h-6 items-center justify-center gap-1 bg-panel/95 font-display text-2xs font-semibold uppercase tracking-[0.06em] text-mid"
+                    style={plannedLane}
+                  >
+                    <CalendarClock size={11} /> Planned
+                  </span>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+      </div>
+
+      {detail && <EntryPopover detail={detail} onClose={() => setDetail(null)} />}
     </div>
   )
 }

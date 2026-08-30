@@ -21,9 +21,9 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { CalendarLegend, WeekCalendar } from '../components/WeekCalendar'
-import { Button, Note } from '../components/ui'
+import { Button, Note, TooltipCard } from '../components/ui'
 import { useDemo } from '../state/DemoContext'
-import { COMMITMENTS, HERO_TASK, SIMULATED_ENTRIES } from '../data/demo'
+import { COMMITMENTS, HERO_TASK, OTHER_TASKS, PROJECTS, SIMULATED_ENTRIES } from '../data/demo'
 import {
   DEMO_NOW,
   formatClock,
@@ -175,43 +175,115 @@ function DateRow({
   )
 }
 
-/* Row 3 — logged / planned summary bars. */
+/* Row 3 — logged / planned summary bars, broken down by project on hover. */
+
+interface Segment {
+  label: string
+  hours: number
+  cls: string
+}
+
+const PROJECT_FILL: Record<string, string> = {
+  'skoda-infotainment': 'bg-e-pink',
+  'bosch-sensor': 'bg-e-blue',
+  internal: 'bg-e-yellow',
+}
+
+function StackedBar({ segments, width }: { segments: Segment[]; width: number }) {
+  const [hover, setHover] = useState<number | null>(null)
+  const total = segments.reduce((s, x) => s + x.hours, 0)
+
+  // Centre of each segment, for placing the tooltip caret.
+  let acc = 0
+  const centres = segments.map((seg) => {
+    const c = acc + seg.hours / 2
+    acc += seg.hours
+    return total ? (c / total) * 100 : 0
+  })
+
+  return (
+    <div className="relative" style={{ width }}>
+      <div className="flex h-1.5 overflow-hidden rounded-pill bg-panel-3">
+        {total === 0 ? (
+          <div className="w-full" />
+        ) : (
+          segments.map((seg, i) => (
+            <div
+              key={seg.label}
+              className={clsx(seg.cls, 'cursor-default')}
+              style={{ width: `${(seg.hours / total) * 100}%` }}
+              onMouseEnter={() => setHover(i)}
+              onMouseLeave={() => setHover(null)}
+            />
+          ))
+        )}
+      </div>
+
+      {hover !== null && segments[hover] && (
+        <div
+          className="pointer-events-none absolute top-full z-50 -translate-x-1/2 pt-2"
+          style={{ left: `${centres[hover]}%` }}
+        >
+          <TooltipCard className="whitespace-nowrap">
+            <span className="flex items-center gap-2.5">
+              <span
+                className={clsx('h-2.5 w-2.5 shrink-0 rounded-full', segments[hover].cls)}
+              />
+              <span className="font-display text-[14px] font-semibold text-hi">
+                {segments[hover].label}
+              </span>
+              <span className="tnum ml-4 font-display text-[14px] text-mid">
+                {formatDuration(segments[hover].hours)}
+              </span>
+            </span>
+          </TooltipCard>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function SummaryRow() {
   const { trackedHours, slots } = useDemo()
-  const plannedHours =
-    COMMITMENTS.reduce((s, c) => s + hoursBetween(parse(c.start), parse(c.end)), 0) +
-    slots.reduce((s, x) => s + hoursBetween(parse(x.start), parse(x.end)), 0)
 
-  const loggedSegments = [
-    { w: 34, c: 'bg-e-blue' },
-    { w: 26, c: 'bg-e-pink' },
-    { w: 22, c: 'bg-e-yellow' },
-    { w: 18, c: 'bg-lo' },
-  ]
+  const hoursOf = (list: { start: string; end: string }[]) =>
+    list.reduce((s, x) => s + hoursBetween(parse(x.start), parse(x.end)), 0)
+
+  // Everything tracked so far belongs to the one task the user is working on.
+  const logged: Segment[] =
+    trackedHours > 0
+      ? [
+          {
+            label: 'Infotainment Frontend',
+            hours: trackedHours,
+            cls: PROJECT_FILL['skoda-infotainment'],
+          },
+        ]
+      : []
+
+  const planned: Segment[] = PROJECTS.map((p) => ({
+    label: p.name,
+    cls: PROJECT_FILL[p.id],
+    hours:
+      hoursOf(COMMITMENTS.filter((c) => c.projectId === p.id)) +
+      (p.id === 'skoda-infotainment' ? hoursOf(slots) : 0),
+  })).filter((seg) => seg.hours > 0)
+
+  const loggedTotal = logged.reduce((s, x) => s + x.hours, 0)
+  const plannedTotal = planned.reduce((s, x) => s + x.hours, 0)
 
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-hairline bg-panel px-5 py-2">
       <span className="text-[13px] text-mid">Logged</span>
-      <div className="flex h-1.5 w-[220px] overflow-hidden rounded-pill bg-panel-3">
-        {trackedHours > 0 ? (
-          loggedSegments.map((s, i) => (
-            <div key={i} className={s.c} style={{ width: `${s.w}%` }} />
-          ))
-        ) : (
-          <div className="w-full bg-panel-3" />
-        )}
-      </div>
+      <StackedBar segments={logged} width={220} />
       <span className="tnum font-display text-[13px] font-semibold text-hi">
-        {trackedHours > 0 ? formatDuration(trackedHours) : '–'}
+        {loggedTotal > 0 ? formatDuration(loggedTotal) : '–'}
       </span>
 
       <span className="ml-2 text-[13px] text-mid">Planned</span>
-      <div className="flex h-1.5 w-[180px] overflow-hidden rounded-pill bg-panel-3">
-        <div className="w-[62%] bg-e-blue" />
-        <div className="w-[38%] bg-lo" />
-      </div>
+      <StackedBar segments={planned} width={180} />
       <span className="tnum font-display text-[13px] font-semibold text-hi">
-        {formatDuration(plannedHours)}
+        {formatDuration(plannedTotal)}
       </span>
 
       <span className="ml-auto text-[13px] text-mid">View reports ›</span>
@@ -301,6 +373,30 @@ export function TimerPage() {
   const [split, setSplit] = useState(true)
   const days = weekDays(DEMO_NOW)
 
+  /* The all-day band shows the tasks themselves across their scheduled dates.
+     The hero task spans from its first planned block to its due date, so the
+     commitment becomes visible the moment it is planned. */
+  const taskBars = [
+    ...OTHER_TASKS.filter((t) => t.dueAt).map((t) => ({
+      id: t.id,
+      title: t.title,
+      project: 'Infotainment Frontend',
+      start: parse(t.dueAt!),
+      end: parse(t.dueAt!),
+    })),
+    ...(slots.length
+      ? [
+          {
+            id: HERO_TASK.id,
+            title: HERO_TASK.title,
+            project: 'Infotainment Frontend',
+            start: parse(slots[0].start),
+            end: deadline,
+          },
+        ]
+      : []),
+  ]
+
   return (
     <div className="scrollbar-slim flex min-h-0 flex-1 flex-col overflow-y-auto">
       <TimerRow />
@@ -312,6 +408,7 @@ export function TimerPage() {
         <WeekCalendar
           days={days}
           commitments={COMMITMENTS}
+          taskBars={taskBars}
           slots={slots}
           entries={entries}
           deadline={slots.length ? deadline : undefined}

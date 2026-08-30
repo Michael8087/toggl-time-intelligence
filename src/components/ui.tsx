@@ -105,6 +105,58 @@ export function Chip({
   )
 }
 
+/* ----------------------------------------------------------------- Tooltip -
+ * The floating card Toggl uses on calendar hovers, with its little caret.    */
+
+export function TooltipCard({
+  children,
+  className,
+}: {
+  children: ReactNode
+  className?: string
+}) {
+  return (
+    <div
+      className={clsx(
+        'relative rounded-xl border border-hairline bg-panel px-4 py-3 shadow-pop',
+        className,
+      )}
+    >
+      <span className="absolute -top-[5px] left-1/2 block h-2 w-2 -translate-x-1/2 rotate-45 border-l border-t border-hairline bg-panel" />
+      {children}
+    </div>
+  )
+}
+
+/** One `icon · label · value` line inside a tooltip. */
+export function TooltipRow({
+  icon: Icon,
+  label,
+  value,
+  tone = 'mid',
+}: {
+  icon: typeof Info
+  label: string
+  value: ReactNode
+  tone?: 'pink' | 'mid'
+}) {
+  const c = tone === 'pink' ? 'text-pink' : 'text-mid'
+  return (
+    <div className="flex items-center gap-2.5">
+      <Icon size={15} className={clsx('shrink-0', c)} />
+      <span className={clsx('font-display text-[14px]', c)}>{label}</span>
+      <span
+        className={clsx(
+          'tnum ml-auto pl-6 font-display text-[14px] font-semibold',
+          tone === 'pink' ? 'text-pink' : 'text-hi',
+        )}
+      >
+        {value}
+      </span>
+    </div>
+  )
+}
+
 /* -------------------------------------------------------------------- Card */
 
 export function Card({ children, className }: { children: ReactNode; className?: string }) {
