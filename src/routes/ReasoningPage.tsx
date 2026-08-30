@@ -576,7 +576,7 @@ export function ReasoningPage() {
             index="05"
             tone="decision"
             kicker="Prioritization"
-            title="Diverse signals, but a clear strategic direction"
+            title="Diverse signals, but a clear strategic direction and analysis"
             lede="The three inputs answer three different questions. Prioritization is the only place they are allowed to argue with each other."
           >
             <Grid cols={3}>
