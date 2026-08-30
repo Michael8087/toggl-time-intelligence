@@ -298,19 +298,6 @@ export function ReasoningPage() {
               is becoming, what the product already contains — and how those resolve into one
               deliberate bet.
             </p>
-
-            <div className="mt-5 flex flex-wrap gap-x-7 gap-y-2 border-t border-hairline pt-4">
-              {[
-                ['Brief', 'Improve the IC / freelancer / contractor experience'],
-                ['Constraint', 'W0 — value before any history exists'],
-                ['Timebox', '24 hours, around 6 hours of work'],
-              ].map(([k, v]) => (
-                <div key={k} className="flex items-baseline gap-2">
-                  <span className="eyebrow text-dim">{k}</span>
-                  <span className="text-[13px] text-mid">{v}</span>
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* 01 — Brief, persona, problem */}
